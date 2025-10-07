@@ -1,0 +1,95 @@
+<section id="experiences" class="py-20 bg-aponia-neutral">
+  <div class="mx-auto max-w-7xl px-6">
+    <!-- Título + CTA -->
+    <div class="flex items-center justify-between">
+      <h2 class="font-display text-3xl md:text-4xl text-aponia-primary">Experiencias</h2>
+      <a href="./login"
+         class="hidden sm:inline-block px-4 py-2 rounded-xl bg-aponia-primary text-white shadow-soft hover:shadow-lift transition-all">
+        Personaliza tu plan
+      </a>
+    </div>
+
+    <!-- Carrusel -->
+    <div class="mt-10 relative">
+      <div class="mask-fade">
+        <div #xpCarousel
+             class="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 hide-scrollbar"
+             aria-label="Carrusel de experiencias">
+          <!-- Slide -->
+          <figure class="min-w-[85%] sm:min-w-[48%] lg:min-w-[32%] snap-start rounded-3xl overflow-hidden bg-white shadow-soft hover:shadow-lift transition-all duration-300">
+            <div class="relative group">
+              <img
+                src="https://images.unsplash.com/photo-1554797589-7241bb691973?q=80&w=1200&auto=format&fit=crop"
+                alt="Spa"
+                class="h-60 w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+              <figcaption class="absolute bottom-4 left-4 text-white">
+                <h3 class="font-semibold text-lg">Spa de autor</h3>
+                <p class="text-sm opacity-90">Rituales con esencias locales. 60–120 min.</p>
+              </figcaption>
+            </div>
+          </figure>
+
+          <!-- Slide -->
+          <figure class="min-w-[85%] sm:min-w-[48%] lg:min-w-[32%] snap-start rounded-3xl overflow-hidden bg-white shadow-soft hover:shadow-lift transition-all duration-300">
+            <div class="relative group">
+              <img
+                src="https://s3-us-west-2.amazonaws.com/wp-divingyucatan/wp-content/uploads/2020/04/15110254/tipos-trajes-buceo.jpg"
+                alt="Buceo"
+                class="h-60 w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+              <figcaption class="absolute bottom-4 left-4 text-white">
+                <h3 class="font-semibold text-lg">Buceo en arrecife</h3>
+                <p class="text-sm opacity-90">Para principiantes y avanzados. Equipo incluido.</p>
+              </figcaption>
+            </div>
+          </figure>
+
+          <!-- Slide -->
+          <figure class="min-w-[85%] sm:min-w-[48%] lg:min-w-[32%] snap-start rounded-3xl overflow-hidden bg-white shadow-soft hover:shadow-lift transition-all duration-300">
+            <div class="relative group">
+              <img
+                src="https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=1200&auto=format&fit=crop"
+                alt="Montaña"
+                class="h-60 w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+              <figcaption class="absolute bottom-4 left-4 text-white">
+                <h3 class="font-semibold text-lg">Trekking al amanecer</h3>
+                <p class="text-sm opacity-90">Panorámicas únicas y picnic gourmet.</p>
+              </figcaption>
+            </div>
+          </figure>
+
+          <!-- Slide -->
+          <figure class="min-w-[85%] sm:min-w-[48%] lg:min-w-[32%] snap-start rounded-3xl overflow-hidden bg-white shadow-soft hover:shadow-lift transition-all duration-300">
+            <div class="relative group">
+              <img
+                src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1200&auto=format&fit=crop"
+                alt="Cata de café"
+                class="h-60 w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+              <figcaption class="absolute bottom-4 left-4 text-white">
+                <h3 class="font-semibold text-lg">Cata de café de origen</h3>
+                <p class="text-sm opacity-90">Aprende con baristas certificados.</p>
+              </figcaption>
+            </div>
+          </figure>
+        </div>
+      </div>
+
+      <!-- Controles flotantes -->
+      <button type="button"
+              class="absolute left-2 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-white/90 backdrop-blur border border-slate-200 shadow-soft grid place-items-center hover:bg-white hover:shadow-lift transition-all"
+              aria-label="Anterior"
+              (click)="scrollBy(-step())">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-6 w-6 text-slate-700"><path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+      </button>
+      <button type="button"
+              class="absolute right-2 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-white/90 backdrop-blur border border-slate-200 shadow-soft grid place-items-center hover:bg-white hover:shadow-lift transition-all"
+              aria-label="Siguiente"
+              (click)="scrollBy(step())">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-6 w-6 text-slate-700"><path fill="currentColor" d="M8.59 16.59 10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+      </button>
+    </div>
+  </div>
+</section>

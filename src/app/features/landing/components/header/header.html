@@ -1,0 +1,46 @@
+<header class="sticky inset-x-0 top-0 z-50 bg-white/80 backdrop-blur border-b border-slate-200 select-none">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+    <a href="#home" class="flex items-center gap-2">
+      <img src="img/logo_aponia.png" class="h-10 w-10" alt="logo" />
+      <span class="font-display text-xl tracking-wide text-aponia-primary">Aponia</span>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+      <a href="#about" class="hover:text-aponia-primary">Sobre</a>
+      <a href="#rooms" class="hover:text-aponia-primary">Habitaciones</a>
+      <a href="#services" class="hover:text-aponia-primary">Servicios</a>
+      <a href="#experiences" class="hover:text-aponia-primary">Experiencias</a>
+      <a href="#testimonials" class="hover:text-aponia-primary">Opiniones</a>
+      <a href="#contact" class="hover:text-aponia-primary">Contacto</a>
+    </nav>
+
+    <div class="hidden md:flex items-center gap-3">
+      <a href="./login" class="px-4 py-2 rounded-lg border border-aponia-primary text-aponia-primary hover:bg-aponia-primary/5">Iniciar sesión</a>
+      <a href="./register" class="px-4 py-2 rounded-lg bg-aponia-secondary text-white hover:opacity-90">Crear cuenta</a>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button (click)="toggle()" class="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-lg border border-slate-300" aria-label="Abrir menú">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6">
+        <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="md:hidden border-t border-slate-200 bg-white" [class.hidden]="!open()">
+    <nav class="px-4 py-3 grid gap-3 text-sm">
+      <a href="#about" class="py-2">Sobre</a>
+      <a href="#rooms" class="py-2">Habitaciones</a>
+      <a href="/habitaciones-tipos/cards" class="py-2 font-semibold text-secondary">Tipos de Habitación</a>
+      <a href="#services" class="py-2">Servicios</a>
+      <a href="#experiences" class="py-2">Experiencias</a>
+      <a href="#testimonials" class="py-2">Opiniones</a>
+      <a href="#contact" class="py-2">Contacto</a>
+      <div class="flex gap-2 pt-2">
+        <a [routerLink]="'/habitaciones-tipos'" class="flex-1 px-4 py-2 rounded-lg border border-aponia-primary text-aponia-primary text-center">Iniciar sesión</a>
+        <a href="/signup" class="flex-1 px-4 py-2 rounded-lg bg-aponia-secondary text-white text-center">Crear cuenta</a>
+      </div>
+    </nav>
+  </div>
+</header>

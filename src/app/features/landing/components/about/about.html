@@ -1,0 +1,33 @@
+<section id="about" class="py-20 bg-aponia-beige/40">
+  <div class="mx-auto max-w-7xl px-6 grid md:grid-cols-2 gap-10 items-center">
+    <div>
+      <h2 class="font-display text-3xl md:text-4xl text-aponia-primary">Sobre Aponia</h2>
+      <p class="mt-4 text-slate-700 leading-relaxed">
+        En Aponia cuidamos cada detalle para que vivas un descanso pleno. Nuestro hotel combina diseño contemporáneo,
+        servicio excepcional y una oferta de experiencias dentro y fuera de nuestras instalaciones.
+      </p>
+      <ul class="mt-6 grid gap-3 text-slate-700">
+        <li class="flex items-start gap-3"><span class="mt-1 h-2.5 w-2.5 rounded-full bg-aponia-secondary"></span>Spa & Wellness</li>
+        <li class="flex items-start gap-3"><span class="mt-1 h-2.5 w-2.5 rounded-full bg-aponia-secondary"></span>Restaurante gourmet</li>
+        <li class="flex items-start gap-3"><span class="mt-1 h-2.5 w-2.5 rounded-full bg-aponia-secondary"></span>Tours y experiencias</li>
+      </ul>
+    </div>
+
+    <div class="relative">
+      <img [src]="currentImage()" alt="Suite de lujo"
+           class="rounded-2xl shadow-soft object-cover w-full h-[360px] transition-opacity duration-700"
+           [class.opacity-0]="fading()"/>
+
+      <div class="flex justify-center gap-2 mt-4">
+        @for (img of images; track img; let i = $index) {
+          <span (click)="go(i)"
+                class="h-2 w-2 rounded-full cursor-pointer transition-colors duration-300"
+                [class.bg-aponia-primary]="i === index()"
+                [class.bg-gray-300]="i !== index()"></span>
+        }
+      </div>
+
+      <div class="absolute -bottom-6 -left-6 hidden sm:block h-28 w-28 rounded-2xl bg-aponia-secondary/20"></div>
+    </div>
+  </div>
+</section>
