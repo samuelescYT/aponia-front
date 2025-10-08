@@ -1,8 +1,28 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
+// app.config.ts
+import {
+  ApplicationConfig,
+  provideBrowserGlobalErrorListeners,
+  provideZonelessChangeDetection,
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
-
 import { routes } from './app.routes';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+
+import {
+  HttpInterceptorFn,
+  provideHttpClient,
+  withFetch,
+  withInterceptors,
+} from '@angular/common/http';
+import { REQUIRE_CREDENTIALS } from './shared/tokens/withcredentials.token';
+
+const withCredentialsInterceptor: HttpInterceptorFn = (req, next) => {
+  // Solo activa cookies si la request lo pide vía HttpContext
+  if (req.context.get(REQUIRE_CREDENTIALS)) {
+    req = req.clone({ withCredentials: true });
+  }
+  return next(req);
+};
+
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -10,7 +30,8 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideHttpClient(
-      withFetch()
-    )
-  ]
+      withFetch(), // backend basado en fetch
+      withInterceptors([withCredentialsInterceptor]),
+    ),
+  ],
 };

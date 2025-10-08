@@ -1,0 +1,105 @@
+<div class="flex h-full  bg-cover bg-center">
+      <div class="bg-transparent flex-1 h-full">
+        <img src="img/lobby-hotel.jpg" alt="Lobby elegante" class="h-full w-full object-cover"/>
+
+      </div>
+
+      <div class="bg-aponia-neutral flex-[.8] h-full flex items-center justify-center">
+        <div
+          class="p-8 rounded-2xl max-w-md w-full bg-white/60 backdrop-blur-sm shadow-soft"
+        >
+          <h1 class="text-2xl font-display font-bold text-center mb-2 text-aponia-primary">
+            Crear cuenta
+          </h1>
+
+          <p class="text-sm text-center text-gray-500 mb-6">
+            Registra tus datos para continuar
+          </p>
+
+          @if (error()) {
+            <div
+              class="text-red-700 bg-red-100 rounded-md px-3 py-2 text-sm text-center mb-4"
+            >
+              {{ error() }}
+            </div>
+          }
+
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1"
+                >Correo electrónico</label
+              >
+              <input
+                type="email"
+                formControlName="email"
+                placeholder="cliente@correo.com"
+                required
+                class="mt-1 px-4 w-full rounded-md border border-gray-300 shadow-sm
+                       focus:border-aponia-primary focus:ring-aponia-primary outline-none py-2"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1"
+                >Contraseña</label
+              >
+              <input
+                type="password"
+                formControlName="password"
+                placeholder="••••••••"
+                required
+                class="mt-1 px-4 w-full rounded-md border border-gray-300 shadow-sm
+                       focus:border-aponia-primary focus:ring-aponia-primary outline-none py-2"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1"
+                >Nombre completo</label
+              >
+              <input
+                type="text"
+                formControlName="nombreCompleto"
+                placeholder="Nombre y apellidos"
+                required
+                class="mt-1 px-4 w-full rounded-md border border-gray-300 shadow-sm
+                       focus:border-aponia-primary focus:ring-aponia-primary outline-none py-2"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1"
+                >Teléfono (opcional)</label
+              >
+              <input
+                type="text"
+                formControlName="telefono"
+                placeholder="+57 3xx xxx xxxx"
+                class="mt-1 px-4 w-full rounded-md border border-gray-300 shadow-sm
+                       focus:border-aponia-primary focus:ring-aponia-primary outline-none py-2"
+              />
+            </div>
+
+            <button
+              type="submit"
+              [disabled]="form.invalid"
+              class="w-full bg-aponia-secondary text-white py-2 px-4 rounded-md
+                     hover:bg-aponia-secondary/80 transition
+                     disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              Crear cuenta
+            </button>
+
+            <p class="text-sm text-center text-gray-500 mt-4">
+              ¿Ya tienes cuenta?
+              <a
+                routerLink="/login"
+                class="text-aponia-secondary hover:text-aponia-secondary/80 font-medium"
+              >
+                Inicia sesión
+              </a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
