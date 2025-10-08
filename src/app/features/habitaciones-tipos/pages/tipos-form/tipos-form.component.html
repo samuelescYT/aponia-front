@@ -6,23 +6,13 @@
 
   <div class="rounded-2xl border border-slate-200 shadow">
     <div class="p-6">
-
-      <!-- Estado cargando sólo en editar -->
-      <div *ngIf="loading" class="px-6 py-8 text-center text-slate-500">
-        Cargando datos del tipo...
-      </div>
-
-      <form *ngIf="!loading" [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6">
         <div class="grid gap-4 md:grid-cols-2">
           <div class="flex flex-col gap-1">
             <label for="nombre" class="text-sm font-semibold">Nombre</label>
             <input id="nombre" formControlName="nombre" placeholder="Ej: Superior, Deluxe" required
                    class="rounded-xl border border-slate-200 px-3 py-2"/>
-            <div class="text-xs text-rose-600" *ngIf="form.controls.nombre.touched && form.controls.nombre.invalid">
-              Nombre es requerido (máx. 50).
-            </div>
           </div>
-
           <div class="flex flex-col gap-1">
             <label for="aforo" class="text-sm font-semibold">Aforo máximo</label>
             <input id="aforo" type="number" min="1" step="1" formControlName="aforoMaximo" required
@@ -42,7 +32,7 @@
             <label for="precio" class="text-sm font-semibold">Precio por noche (COP)</label>
             <input id="precio" type="number" step="0.01" min="0" formControlName="precioPorNoche" required
                    class="rounded-xl border border-slate-200 px-3 py-2"/>
-            <div class="text-xs text-slate-500">Usa punto para decimales.</div>
+            <div class="text-xs text-slate-500">Se formatea en listado. Usa punto para decimales.</div>
           </div>
         </div>
 
@@ -58,9 +48,8 @@
             Cancelar
           </a>
           <button type="submit"
-                  [disabled]="saving || form.invalid"
-                  class="inline-flex items-center rounded-xl bg-amber-600 text-white font-semibold px-4 py-2 shadow hover:bg-amber-700 disabled:opacity-60 disabled:cursor-not-allowed">
-            {{ saving ? 'Guardando…' : (isEdit ? 'Guardar cambios' : 'Crear tipo') }}
+                  class="inline-flex items-center rounded-xl bg-amber-600 text-white font-semibold px-4 py-2 shadow hover:bg-amber-700">
+            {{ isEdit ? 'Guardar cambios' : 'Crear tipo' }}
           </button>
         </div>
       </form>

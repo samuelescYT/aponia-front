@@ -12,8 +12,9 @@
 
   <div class="border border-slate-200 rounded-2xl shadow">
     <div class="overflow-x-auto">
-      <ng-container *ngIf="tipos$ | async as tipos; else loading">
-        <ng-container *ngIf="tipos.length > 0; else empty">
+
+      @if (tipos$ | async; as tipos) {
+        @if (tipos.length > 0) {
           <table class="w-full min-w-[820px] border-collapse">
             <thead>
               <tr class="bg-slate-50 text-slate-800 text-xs uppercase tracking-wider">
@@ -24,46 +25,54 @@
                 <th class="text-left px-4 py-3">Acciones</th>
               </tr>
             </thead>
+
             <tbody class="text-sm">
-              <tr *ngFor="let tipo of tipos; trackBy: trackById" class="border-b border-slate-100 hover:bg-slate-50">
-                <td class="px-4 py-3">
-                  <div class="font-semibold">{{ tipo.nombre }}</div>
-                  <div class="text-slate-500 text-xs">
-                    {{ (tipo.descripcion || 'No tiene descripción') | slice:0:80 }}
-                    {{ (tipo.descripcion?.length || 0) > 80 ? '…' : '' }}
-                  </div>
-                </td>
-                <td class="px-4 py-3">{{ tipo.aforoMaximo }}</td>
-                <td class="px-4 py-3">{{ tipo.precioPorNoche }} COP</td>
-                <td class="px-4 py-3">
-                  <span class="inline-block rounded-full border px-3 py-1 text-xs font-medium"
-                        [ngClass]="tipo.activa
-                          ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
-                          : 'bg-rose-50 border-rose-200 text-rose-700'">
-                    {{ tipo.activa ? 'Sí' : 'No' }}
-                  </span>
-                </td>
-                <td class="px-4 py-3">
-                  <div class="flex gap-2">
-                    <a class="inline-flex items-center rounded-lg border border-blue-900 text-blue-900 px-3 py-1 text-sm hover:bg-blue-50"
-                       [routerLink]="['/habitaciones-tipos', tipo.id, 'editar']">Editar</a>
-                    <button (click)="onDelete(tipo.id)"
-                            class="rounded-lg bg-rose-600 text-white px-3 py-1 text-sm hover:bg-rose-500">
-                      Eliminar
-                    </button>
-                  </div>
-                </td>
-              </tr>
+              @for (tipo of tipos; track tipo.id) {
+                <tr class="border-b border-slate-100 hover:bg-slate-50">
+                  <td class="px-4 py-3">
+                    <div class="font-semibold">{{ tipo.nombre }}</div>
+                    <div class="text-slate-500 text-xs">
+                      {{ (tipo.descripcion || 'No tiene descripción') | slice:0:80 }}
+                      {{ (tipo.descripcion?.length || 0) > 80 ? '…' : '' }}
+                    </div>
+                  </td>
+                  <td class="px-4 py-3">{{ tipo.aforoMaximo }}</td>
+                  <td class="px-4 py-3">{{ tipo.precioPorNoche }} COP</td>
+                  <td class="px-4 py-3">
+                    <span class="inline-block rounded-full border px-3 py-1 text-xs font-medium"
+                          [ngClass]="tipo.activa
+                            ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                            : 'bg-rose-50 border-rose-200 text-rose-700'">
+                      {{ tipo.activa ? 'Sí' : 'No' }}
+                    </span>
+                  </td>
+                  <td class="px-4 py-3">
+                    <div class="flex gap-2">
+                      <a class="inline-flex items-center rounded-lg border border-blue-900 text-blue-900 px-3 py-1 text-sm hover:bg-blue-50"
+                         [routerLink]="['/habitaciones-tipos', tipo.id, 'editar']">Editar</a>
+                      <button (click)="onDelete(tipo.id)"
+                              class="rounded-lg bg-rose-600 text-white px-3 py-1 text-sm hover:bg-rose-500">
+                        Eliminar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5" class="px-6 py-8 text-center text-slate-400">
+                    No hay tipos creados.
+                  </td>
+                </tr>
+              }
             </tbody>
           </table>
-        </ng-container>
-        <ng-template #empty>
+        } @else {
           <div class="px-6 py-8 text-center text-slate-400">No hay tipos creados.</div>
-        </ng-template>
-      </ng-container>
-      <ng-template #loading>
+        }
+      } @else {
         <div class="px-6 py-8 text-center text-slate-500">Cargando tipos...</div>
-      </ng-template>
+      }
+
     </div>
   </div>
 </main>
