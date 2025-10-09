@@ -1,88 +1,112 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { HabitacionesService } from '../../../../core/services/habitaciones/habitaciones.service';
 import { HabitacionesApiService } from '../../../../core/services/habitaciones/habitaciones-api.service';
-import { HabitacionTipoApiService } from '../../../../core/services/habitaciones-tipos/habitaciones-tipos-api.service';
-import { Habitacion } from './../../../../shared/models/habitacion.model';
-import { HabitacionTipo } from './../../../../shared/models/habitacion-tipo.model';
+import { Habitacion } from '../../../../shared/models/habitacion.model';
 
 @Component({
-  selector: 'app-habitaciones-form',
+  selector: 'app-habitacion-form',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './habitaciones-form.component.html',
 })
 export class HabitacionesFormComponent implements OnInit {
-  habitacion: Habitacion = {
-  id: '',
-  numero: 0, 
-  activa: true,
-  tipoId: '',
-};
+  private fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private service = inject(HabitacionesService);
+  private api = inject(HabitacionesApiService);
 
-
-  tiposHabitacion: HabitacionTipo[] = [];
   isEdit = false;
-  loading = false;
+  id: string | null = null;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private api: HabitacionesApiService,
-    private tiposApi: HabitacionTipoApiService
-  ) {}
+  loading = false;
+  saving = false;
+
+  // ✅ Form tipado
+  form = this.fb.nonNullable.group({
+    numero: this.fb.nonNullable.control<number>(0, [Validators.required, Validators.min(1)]),
+    activa: this.fb.nonNullable.control<boolean>(true),
+    tipoId: this.fb.nonNullable.control<string>('', [Validators.required]),
+  });
+
+  // ✅ Guarda el tipo actual en modo edición
+  tipoActualId: string = '';
 
   ngOnInit(): void {
-    // Cargar tipos de habitación
-      this.tiposApi.listAll().subscribe({
-      next: (data: HabitacionTipo[]) => (this.tiposHabitacion = data),
-    });
-
-    // Detectar si estamos en modo edición
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.isEdit = true;
-      this.loading = true;
-      this.api.getById(id).subscribe({
-        next: (data) => {
-          this.habitacion = data;
-          this.loading = false;
-        },
-        error: () => (this.loading = false),
-      });
-    }
-  }
+    this.isEdit = !!id;
+    this.id = id;
 
-  guardar(): void {
+    if (!this.isEdit) return;
+
     this.loading = true;
+    this.api.getById(id!).subscribe({
+      next: (h) => {
+        if (!h) {
+          this.router.navigate(['/habitaciones']);
+          return;
+        }
 
-    const peticion = this.isEdit
-      ? this.api.update(this.habitacion)
-      : this.api.create(this.habitacion);
-
-    peticion.subscribe({
-      next: () => {
-        this.loading = false;
+        // ✅ Guarda el tipo actual y rellena el formulario
+        this.tipoActualId = h.tipo?.id ?? '';
+        this.form.patchValue({
+          numero: Number(h.numero),
+          activa: h.activa,
+          tipoId: h.tipo?.id ?? '',
+        });
+      },
+      error: (err) => {
+        console.error('Error cargando habitación', err);
         this.router.navigate(['/habitaciones']);
       },
-      error: () => {
-        this.loading = false;
-        alert('Ocurrió un error al guardar la habitación.');
-      },
+      complete: () => (this.loading = false),
     });
   }
 
-  // Métodos para manejar los eventos del formulario
-onNumeroChange(event: Event): void {
-  const input = event.target as HTMLInputElement;
-  const value = input.value;
-  this.habitacion.numero = value ? parseInt(value, 10) : 0;
-}
+  onSubmit(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      alert('Por favor completa todos los campos obligatorios.');
+      return;
+    }
 
-onTipoChange(event: Event): void {
-  const select = event.target as HTMLSelectElement;
-  this.habitacion.tipoId = select.value;
-}
+    this.saving = true;
+    const value = this.form.getRawValue();
 
-onActivaChange(event: Event): void {
-  const checkbox = event.target as HTMLInputElement;
-  this.habitacion.activa = checkbox.checked;
-}
+    // ✅ Cuerpo JSON sin tipoId (el backend lo recibe como query param)
+    const habitacion: Omit<Habitacion, 'tipoId'> = {
+      id: this.id ?? '',
+      numero: Number(value.numero),
+      activa: value.activa,
+    };
+
+    // ✅ Determinar tipoId (nuevo o existente)
+    const tipoId = value.tipoId || this.tipoActualId;
+
+    // Si sigue vacío, no podemos guardar (nullable = false en backend)
+    if (!tipoId) {
+      alert('Debes seleccionar un tipo de habitación antes de guardar.');
+      this.saving = false;
+      return;
+    }
+
+    const done = () => {
+      this.saving = false;
+      this.router.navigate(['/habitaciones']);
+    };
+    const fail = (err: unknown) => {
+      console.error('Error guardando habitación', err);
+      this.saving = false;
+      alert('Ocurrió un error guardando la habitación.');
+    };
+
+    if (this.isEdit && this.id) {
+      this.service.actualizar(habitacion as Habitacion, tipoId).subscribe({ next: done, error: fail });
+    } else {
+      this.service.crear(habitacion as Habitacion, tipoId).subscribe({ next: done, error: fail });
+    }
+  }
 }

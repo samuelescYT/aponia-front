@@ -7,7 +7,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class ServicioApiService {
-  private baseUrl = 'http://localhost:8083/api/habitaciones-tipos';
+  private baseUrl = 'http://localhost:8083/api/servicios';
 
   constructor(private http: HttpClient) {}
 

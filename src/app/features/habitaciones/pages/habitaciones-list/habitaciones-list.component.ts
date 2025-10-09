@@ -1,51 +1,38 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { HabitacionesApiService } from '../../../../core/services/habitaciones/habitaciones-api.service';
-import { Habitacion } from './../../../../shared/models/habitacion.model';
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { AsyncPipe } from '@angular/common';
+import { HabitacionesService } from '../../../../core/services/habitaciones/habitaciones.service';
+import { Habitacion } from '../../../../shared/models/habitacion.model';
 
 @Component({
   selector: 'app-habitaciones-list',
+  standalone: true,
+  imports: [CommonModule, RouterLink],
   templateUrl: './habitaciones-list.component.html',
 })
-export class HabitacionesListComponent implements OnInit {
-  habitaciones: Habitacion[] = [];
-  okMessage: string = ''; // Agregar esta propiedad
-  errorMessage: string = ''; // Agregar esta propiedad
-  loading = false;
+export class HabitacionesListComponent {
+  private service = inject(HabitacionesService);
 
-  constructor(
-    private api: HabitacionesApiService,
-    private router: Router
-  ) {}
+  habitaciones$ = this.service.listar();
 
-  ngOnInit(): void {
-    this.cargar();
-  }
-
-  cargar(): void {
-    this.loading = true;
-    this.api.getAll().subscribe({
-      next: (data) => {
-        this.habitaciones = data;
-        this.loading = false;
-      },
-      error: () => {
-        this.loading = false;
-        alert('Error al cargar las habitaciones');
-      },
-    });
-  }
-
-  editar(habitacion: Habitacion): void {
-    this.router.navigate(['/habitaciones/form', habitacion.id]);
-  }
-
-  eliminar(id: string): void {
-    if (confirm('¿Deseas eliminar esta habitación?')) {
-      this.api.delete(id).subscribe({
-        next: () => this.cargar(),
-        error: () => alert('Error al eliminar la habitación'),
+  onDelete(id: string) {
+    const ok = confirm('¿Eliminar esta habitación?');
+    if (ok) {
+      this.service.eliminar(id).subscribe({
+        next: () => {
+          // recarga stream tras borrar
+          this.habitaciones$ = this.service.listar();
+        },
+        error: (err) => {
+          console.error('Error eliminando habitación', err);
+          alert('Error eliminando habitación');
+        },
       });
     }
+  }
+
+  trackById(index: number, item: Habitacion) {
+    return item.id;
   }
 }

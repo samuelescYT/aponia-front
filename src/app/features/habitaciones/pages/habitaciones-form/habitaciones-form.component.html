@@ -1,79 +1,62 @@
-<main class="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
-  <div *ngIf="loading" class="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-8 text-center">
-    <p class="text-slate-600">Cargando...</p>
-  </div>
+<main class="max-w-3xl mx-auto px-6 py-6">
+  <h1 class="text-2xl text-blue-900 mb-1">
+    {{ isEdit ? 'Editar habitación' : 'Nueva habitación' }}
+  </h1>
+  <p class="text-slate-600 mb-4">Completa la información y guarda.</p>
 
-  <div *ngIf="!loading" class="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-8">
-    <h1 class="text-3xl font-serif text-center mb-6 text-[#0a3d62]">
-      {{ isEdit ? 'Editar habitación' : 'Nueva habitación' }}
-    </h1>
+  <div class="rounded-2xl border border-slate-200 shadow">
+    <div class="p-6">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6">
+        <div class="flex flex-col gap-1">
+          <label for="numero" class="text-sm font-semibold">Número</label>
+          <input
+            id="numero"
+            type="number"
+            formControlName="numero"
+            placeholder="Ej: 101"
+            required
+            class="rounded-xl border border-slate-200 px-3 py-2"
+          />
+        </div>
 
-    <p class="text-slate-600 text-center mb-6">Completa la información de la habitación.</p>
+        <div class="flex flex-col gap-1">
+          <label for="tipo" class="text-sm font-semibold">Tipo (opcional)</label>
+          <input
+            id="tipo"
+            formControlName="tipoId"
+            placeholder="UUID del tipo"
+            class="rounded-xl border border-slate-200 px-3 py-2"
+          />
+          <div class="text-xs text-slate-500">
+            Este valor se envía como <code>?tipoId=...</code> en la URL.
+          </div>
+        </div>
 
-    <!-- Formulario temporal sin validación -->
-    <div class="space-y-5">
-      <!-- Número -->
-      <div>
-        <label for="numero" class="block font-semibold mb-1 text-sm text-slate-700">Número</label>
-        <input
-          id="numero"
-          type="number"
-          min="1"
-          [value]="habitacion.numero"
-          (input)="onNumeroChange($event)"
-          class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#cfa15a]/40"
-          placeholder="Ej. 101"
-        />
-      </div>
+        <div class="flex items-center gap-2">
+          <input
+            id="activa"
+            type="checkbox"
+            formControlName="activa"
+            class="h-4 w-4 border-slate-300 rounded"
+          />
+          <label for="activa" class="text-sm font-medium">Activa</label>
+        </div>
 
-      <!-- Tipo de habitación -->
-      <div>
-        <label for="tipoId" class="block font-semibold mb-1 text-sm text-slate-700"
-          >Tipo de habitación</label
-        >
-        <select
-          id="tipoId"
-          [value]="habitacion.tipoId"
-          (change)="onTipoChange($event)"
-          class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#cfa15a]/40"
-        >
-          <option [value]="null" disabled>Seleccione un tipo</option>
-          <option *ngFor="let tipo of tiposHabitacion" [value]="tipo.id">
-            {{ tipo.nombre }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Activa -->
-      <div class="flex items-center gap-2">
-        <input
-          id="activa"
-          type="checkbox"
-          [checked]="habitacion.activa"
-          (change)="onActivaChange($event)"
-          class="h-4 w-4 accent-[#cfa15a]"
-        />
-        <label for="activa" class="font-medium text-slate-700">Activa</label>
-      </div>
-
-      <!-- Botones -->
-      <div class="flex justify-between pt-6 border-t border-slate-200">
-        <button
-          type="button"
-          class="px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
-          routerLink="/habitaciones"
-        >
-          Cancelar
-        </button>
-
-        <button
-          type="button"
-          (click)="guardar()"
-          class="px-4 py-2 rounded-lg bg-[#cfa15a] text-white font-semibold hover:bg-[#b48e4f]"
-        >
-          {{ isEdit ? 'Actualizar' : 'Guardar' }}
-        </button>
-      </div>
+        <div class="flex justify-end gap-3 pt-4 border-t border-slate-200">
+          <a
+            [routerLink]="['/habitaciones']"
+            class="inline-flex items-center rounded-xl border border-slate-200 px-4 py-2 text-sm"
+          >
+            Cancelar
+          </a>
+          <button
+            type="submit"
+            class="inline-flex items-center rounded-xl bg-amber-600 text-white font-semibold px-4 py-2 shadow hover:bg-amber-700"
+          >
+            {{ isEdit ? 'Guardar cambios' : 'Crear habitación' }}
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </main>
