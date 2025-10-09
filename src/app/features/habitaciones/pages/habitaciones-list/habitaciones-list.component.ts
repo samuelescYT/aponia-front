@@ -9,6 +9,8 @@ import { Habitacion } from './../../../../shared/models/habitacion.model';
 })
 export class HabitacionesListComponent implements OnInit {
   habitaciones: Habitacion[] = [];
+  okMessage: string = ''; // Agregar esta propiedad
+  errorMessage: string = ''; // Agregar esta propiedad
   loading = false;
 
   constructor(

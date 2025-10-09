@@ -1,12 +1,17 @@
 <main class="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
-  <div class="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-8">
+  <div *ngIf="loading" class="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-8 text-center">
+    <p class="text-slate-600">Cargando...</p>
+  </div>
+
+  <div *ngIf="!loading" class="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-8">
     <h1 class="text-3xl font-serif text-center mb-6 text-[#0a3d62]">
-      {{ habitacion?.id ? 'Editar habitación' : 'Nueva habitación' }}
+      {{ isEdit ? 'Editar habitación' : 'Nueva habitación' }}
     </h1>
 
     <p class="text-slate-600 text-center mb-6">Completa la información de la habitación.</p>
 
-    <form class="space-y-5" (ngSubmit)="guardar()" #habitacionForm="ngForm" novalidate>
+    <!-- Formulario temporal sin validación -->
+    <div class="space-y-5">
       <!-- Número -->
       <div>
         <label for="numero" class="block font-semibold mb-1 text-sm text-slate-700">Número</label>
@@ -14,31 +19,10 @@
           id="numero"
           type="number"
           min="1"
-          [(ngModel)]="habitacion.numero"
-          name="numero"
-          required
+          [value]="habitacion.numero"
+          (input)="onNumeroChange($event)"
           class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#cfa15a]/40"
           placeholder="Ej. 101"
-        />
-        <div
-          *ngIf="habitacionForm.submitted && !habitacion.numero"
-          class="text-red-600 text-xs mt-1"
-        >
-          El número es obligatorio.
-        </div>
-      </div>
-
-      <!-- Piso -->
-      <div>
-        <label for="piso" class="block font-semibold mb-1 text-sm text-slate-700">Piso</label>
-        <input
-          id="piso"
-          type="number"
-          min="1"
-          [(ngModel)]="habitacion.piso"
-          name="piso"
-          class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#cfa15a]/40"
-          placeholder="Ej. 2"
         />
       </div>
 
@@ -49,22 +33,15 @@
         >
         <select
           id="tipoId"
-          [(ngModel)]="habitacion.tipoId"
-          name="tipoId"
-          required
+          [value]="habitacion.tipoId"
+          (change)="onTipoChange($event)"
           class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#cfa15a]/40"
         >
-          <option [ngValue]="null" disabled>Seleccione un tipo</option>
-          <option *ngFor="let tipo of tiposHabitacion" [ngValue]="tipo.id">
+          <option [value]="null" disabled>Seleccione un tipo</option>
+          <option *ngFor="let tipo of tiposHabitacion" [value]="tipo.id">
             {{ tipo.nombre }}
           </option>
         </select>
-        <div
-          *ngIf="habitacionForm.submitted && !habitacion.tipoId"
-          class="text-red-600 text-xs mt-1"
-        >
-          Debe seleccionar un tipo.
-        </div>
       </div>
 
       <!-- Activa -->
@@ -72,8 +49,8 @@
         <input
           id="activa"
           type="checkbox"
-          [(ngModel)]="habitacion.activa"
-          name="activa"
+          [checked]="habitacion.activa"
+          (change)="onActivaChange($event)"
           class="h-4 w-4 accent-[#cfa15a]"
         />
         <label for="activa" class="font-medium text-slate-700">Activa</label>
@@ -90,13 +67,13 @@
         </button>
 
         <button
-          type="submit"
-          [disabled]="habitacionForm.invalid"
-          class="px-4 py-2 rounded-lg bg-[#cfa15a] text-white font-semibold hover:bg-[#b48e4f] disabled:opacity-50"
+          type="button"
+          (click)="guardar()"
+          class="px-4 py-2 rounded-lg bg-[#cfa15a] text-white font-semibold hover:bg-[#b48e4f]"
         >
-          {{ habitacion?.id ? 'Actualizar' : 'Guardar' }}
+          {{ isEdit ? 'Actualizar' : 'Guardar' }}
         </button>
       </div>
-    </form>
+    </div>
   </div>
 </main>

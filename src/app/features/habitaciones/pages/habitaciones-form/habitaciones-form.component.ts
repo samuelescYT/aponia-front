@@ -12,7 +12,7 @@ import { HabitacionTipo } from './../../../../shared/models/habitacion-tipo.mode
 export class HabitacionesFormComponent implements OnInit {
   habitacion: Habitacion = {
   id: '',
-  numero: 0, // ✅ number, no string
+  numero: 0, 
   activa: true,
   tipoId: '',
 };
@@ -68,4 +68,21 @@ export class HabitacionesFormComponent implements OnInit {
       },
     });
   }
+
+  // Métodos para manejar los eventos del formulario
+onNumeroChange(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  const value = input.value;
+  this.habitacion.numero = value ? parseInt(value, 10) : 0;
+}
+
+onTipoChange(event: Event): void {
+  const select = event.target as HTMLSelectElement;
+  this.habitacion.tipoId = select.value;
+}
+
+onActivaChange(event: Event): void {
+  const checkbox = event.target as HTMLInputElement;
+  this.habitacion.activa = checkbox.checked;
+}
 }

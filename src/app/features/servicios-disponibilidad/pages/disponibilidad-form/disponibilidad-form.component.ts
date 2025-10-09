@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ServicioDisponibilidadService } from '../../../../core/servicios-disponibilidad/servicio-disponibilidad.service';
 import { ServicioDisponibilidadApiService } from '../../../../core/servicios-disponibilidad/servicio-disponibilidad-api.service';
+import { ServicioDisponibilidad } from '../../../../shared/models/servicio-disponibilidad.model';
 
 @Component({
   selector: 'app-disponibilidad-form',
@@ -67,10 +68,10 @@ export class DisponibilidadFormComponent implements OnInit {
     };
 
     if (this.isEdit && this.id) {
-  const dataWithId: ServicioDisponibilidad = { id: this.id, ...data };
+  const dataWithId = { id: this.id, ...data } as ServicioDisponibilidad;
   this.service.update(this.id, dataWithId).subscribe({ next: done, error: fail });
 } else {
-  const newData: ServicioDisponibilidad = { id: '', ...data };
+  const newData = { id: '', ...data } as ServicioDisponibilidad;
   this.service.create(newData).subscribe({ next: done, error: fail });
 }
 

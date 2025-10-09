@@ -7,140 +7,84 @@
     <p class="text-gray-600">Completa los detalles del servicio.</p>
   </div>
 
+  <!-- Loading state -->
+  <div
+    *ngIf="loading"
+    class="bg-white border border-[#e8edf1] rounded-2xl shadow-md p-8 text-center"
+  >
+    <p class="text-slate-600">Cargando servicio...</p>
+  </div>
+
   <!-- Card -->
-  <div class="bg-white border border-[#e8edf1] rounded-2xl shadow-md">
+  <div *ngIf="!loading" class="bg-white border border-[#e8edf1] rounded-2xl shadow-md">
     <div class="p-5">
       <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-        <!-- Nombre / Lugar -->
-        <div class="grid md:grid-cols-2 gap-4">
-          <div class="flex flex-col gap-1">
-            <label for="nombre" class="text-sm font-semibold">Nombre</label>
-            <input
-              id="nombre"
-              type="text"
-              maxlength="120"
-              placeholder="Ej. Spa & Wellness"
-              formControlName="nombre"
-              class="w-full px-3 py-2 border border-[#e8edf1] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#cfa15a]"
-              [class.border-red-400]="form.get('nombre')?.invalid && form.get('nombre')?.touched"
-            />
-            <div
-              *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched"
-              class="text-red-700 text-xs"
-            >
-              Nombre requerido
-            </div>
-          </div>
-
-          <div class="flex flex-col gap-1">
-            <label for="lugar" class="text-sm font-semibold">Lugar</label>
-            <input
-              id="lugar"
-              type="text"
-              maxlength="120"
-              placeholder="Ej. Torre principal – Piso 2"
-              formControlName="lugar"
-              class="w-full px-3 py-2 border border-[#e8edf1] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#cfa15a]"
-              [class.border-red-400]="form.get('lugar')?.invalid && form.get('lugar')?.touched"
-            />
-          </div>
-        </div>
-
-        <!-- URL de Imagen -->
-        <div class="flex flex-col gap-1 mt-4">
-          <label for="imagenUrl" class="text-sm font-semibold">URL de Imagen</label>
+        <!-- Nombre -->
+        <div class="flex flex-col gap-1 mb-4">
+          <label for="nombre" class="text-sm font-semibold">Nombre</label>
           <input
-            id="imagenUrl"
-            type="url"
-            maxlength="500"
-            placeholder="https://ejemplo.com/imagen.jpg"
-            formControlName="imagenUrl"
-            (input)="updateImagePreview($event.target.value)"
+            id="nombre"
+            type="text"
+            maxlength="100"
+            placeholder="Ej. Masaje relajante"
+            formControlName="nombre"
             class="w-full px-3 py-2 border border-[#e8edf1] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#cfa15a]"
+            [class.border-red-400]="form.get('nombre')?.invalid && form.get('nombre')?.touched"
           />
-          <div class="text-xs text-slate-500">
-            Ingresa la URL de la imagen principal para este servicio.
+          <div
+            *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched"
+            class="text-red-700 text-xs"
+          >
+            <span *ngIf="form.get('nombre')?.errors?.['required']">Nombre requerido</span>
+            <span *ngIf="form.get('nombre')?.errors?.['maxlength']">Máximo 100 caracteres</span>
           </div>
-        </div>
-
-        <!-- Vista Previa de Imagen -->
-        <div
-          id="imagePreview"
-          class="preview-image mt-4"
-          [class.show]="form.get('imagenUrl')?.value"
-        >
-          <p class="text-sm font-semibold mb-2">Vista previa:</p>
-          <img
-            [src]="form.get('imagenUrl')?.value"
-            alt="Vista previa de la imagen"
-            class="max-w-full max-h-48 rounded-lg border border-[#e8edf1]"
-          />
         </div>
 
         <!-- Descripción -->
-        <div class="flex flex-col gap-1 mt-4">
+        <div class="flex flex-col gap-1 mb-4">
           <label for="descripcion" class="text-sm font-semibold">Descripción</label>
           <textarea
             id="descripcion"
             formControlName="descripcion"
-            placeholder="Describe la experiencia, condiciones, etc."
+            placeholder="Describe el servicio, beneficios, etc."
             class="w-full min-h-[120px] resize-y px-3 py-2 border border-[#e8edf1] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#cfa15a]"
           ></textarea>
         </div>
 
-        <!-- Precio / Duración -->
-        <div class="grid md:grid-cols-2 gap-4 mt-4">
-          <div class="flex flex-col gap-1">
-            <label for="precioPorPersona" class="text-sm font-semibold">
-              Precio por persona (COP)
-            </label>
-            <input
-              id="precioPorPersona"
-              type="number"
-              min="0"
-              step="0.01"
-              placeholder="0.00"
-              formControlName="precioPorPersona"
-              class="w-full px-3 py-2 border border-[#e8edf1] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#cfa15a]"
-            />
-            <div class="text-xs text-slate-500">Ingresa el valor en pesos colombianos.</div>
-          </div>
-
-          <div class="flex flex-col gap-1">
-            <label for="duracionMinutos" class="text-sm font-semibold"> Duración (minutos) </label>
-            <input
-              id="duracionMinutos"
-              type="number"
-              min="0"
-              step="1"
-              placeholder="Ej. 90"
-              formControlName="duracionMinutos"
-              class="w-full px-3 py-2 border border-[#e8edf1] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#cfa15a]"
-            />
+        <!-- Precio -->
+        <div class="flex flex-col gap-1 mb-4">
+          <label for="precio" class="text-sm font-semibold"> Precio por persona (COP) </label>
+          <input
+            id="precio"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="0.00"
+            formControlName="precio"
+            class="w-full px-3 py-2 border border-[#e8edf1] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#cfa15a]"
+            [class.border-red-400]="form.get('precio')?.invalid && form.get('precio')?.touched"
+          />
+          <div class="text-xs text-slate-500">Ingresa el valor en pesos colombianos.</div>
+          <div
+            *ngIf="form.get('precio')?.invalid && form.get('precio')?.touched"
+            class="text-red-700 text-xs"
+          >
+            <span *ngIf="form.get('precio')?.errors?.['required']">Precio requerido</span>
+            <span *ngIf="form.get('precio')?.errors?.['min']"
+              >El precio debe ser mayor o igual a 0</span
+            >
           </div>
         </div>
 
-        <!-- Capacidad -->
-        <div class="grid md:grid-cols-2 gap-4 mt-4">
-          <div class="flex flex-col gap-1">
-            <label for="capacidadMaxima" class="text-sm font-semibold"> Capacidad máxima </label>
-            <input
-              id="capacidadMaxima"
-              type="number"
-              min="1"
-              step="1"
-              placeholder="Ej. 8"
-              formControlName="capacidadMaxima"
-              class="w-full px-3 py-2 border border-[#e8edf1] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#cfa15a]"
-            />
-            <div class="text-xs text-slate-500">Opcional. Déjalo vacío si no aplica.</div>
-          </div>
-        </div>
-
-        <!-- Nota sobre imágenes -->
-        <div class="mt-4 text-sm text-slate-500">
-          Las <strong>imágenes adicionales</strong> se gestionan desde su módulo (lista/galería). En
-          la lista se muestra la primera imagen.
+        <!-- Activo -->
+        <div class="flex items-center gap-2 mb-6">
+          <input
+            id="activo"
+            type="checkbox"
+            formControlName="activo"
+            class="h-4 w-4 accent-[#cfa15a]"
+          />
+          <label for="activo" class="text-sm font-semibold">Servicio activo</label>
         </div>
 
         <!-- Botones -->
@@ -153,10 +97,11 @@
           </a>
           <button
             type="submit"
-            [disabled]="saving"
-            class="inline-flex items-center px-4 py-2 rounded-xl font-semibold text-white bg-[#cfa15a] hover:bg-[#b88e4e] shadow"
+            [disabled]="saving || form.invalid"
+            class="inline-flex items-center px-4 py-2 rounded-xl font-semibold text-white bg-[#cfa15a] hover:bg-[#b88e4e] disabled:opacity-50 disabled:cursor-not-allowed shadow"
           >
-            {{ isEdit ? 'Guardar cambios' : 'Crear servicio' }}
+            <span *ngIf="saving">Guardando...</span>
+            <span *ngIf="!saving">{{ isEdit ? 'Guardar cambios' : 'Crear servicio' }}</span>
           </button>
         </div>
       </form>

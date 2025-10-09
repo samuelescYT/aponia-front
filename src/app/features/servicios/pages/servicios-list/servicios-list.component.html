@@ -11,77 +11,55 @@
       >
         <span class="text-lg leading-none">＋</span> Nuevo servicio
       </a>
-      <span class="text-sm text-slate-500">Total: {{ servicios?.length || 0 }}</span>
-    </div>
-
-    <!-- Mensajes -->
-    <div
-      *ngIf="okMessage"
-      class="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-emerald-700"
-    >
-      {{ okMessage }}
-    </div>
-    <div
-      *ngIf="errorMessage"
-      class="mt-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-rose-700"
-    >
-      {{ errorMessage }}
+      <span class="text-sm text-slate-500">Total: {{ (servicios$ | async)?.length || 0 }}</span>
     </div>
   </section>
 
   <!-- Tabla (desktop) -->
   <section
-    *ngIf="servicios?.length > 0"
+    *ngIf="(servicios$ | async) && (servicios$ | async)!.length > 0"
     class="hidden lg:block mt-6 rounded-2xl border border-slate-200 shadow"
   >
     <div class="overflow-auto rounded-2xl">
       <table class="w-full min-w-[960px] border-collapse">
         <thead>
           <tr class="bg-slate-50 text-left text-[11px] uppercase text-slate-800">
-            <th class="p-3">Imagen</th>
-            <th class="p-3">Nombre y lugar</th>
+            <th class="p-3">Nombre</th>
             <th class="p-3">Descripción</th>
-            <th class="p-3">Duración</th>
-            <th class="p-3">Capacidad</th>
             <th class="p-3">Precio / persona</th>
+            <th class="p-3">Estado</th>
             <th class="p-3">Acciones</th>
           </tr>
         </thead>
         <tbody class="text-sm">
-          <tr *ngFor="let s of servicios" class="border-t border-slate-200 hover:bg-slate-50">
-            <td class="p-3">
-              <img
-                [src]="
-                  s.imagenes?.length ? s.imagenes[0].url : '/assets/img/placeholder-servicio.jpg'
-                "
-                alt="Imagen servicio"
-                class="w-16 h-16 object-cover rounded-xl border border-slate-200"
-              />
-            </td>
+          <tr
+            *ngFor="let s of servicios$ | async; trackBy: trackById"
+            class="border-t border-slate-200 hover:bg-slate-50"
+          >
             <td class="p-3">
               <div class="font-semibold">{{ s.nombre }}</div>
-              <div class="text-xs text-slate-500">{{ s.lugar }}</div>
             </td>
             <td class="p-3 text-slate-600">{{ s.descripcion || '-' }}</td>
-            <td class="p-3">
-              <span class="inline-block rounded-full bg-slate-100 px-3 py-1 text-xs">
-                {{ s.duracionMinutos }} min
-              </span>
-            </td>
-            <td class="p-3">{{ s.capacidadMaxima || '-' }}</td>
             <td class="p-3 font-semibold whitespace-nowrap">
               {{ s.precioPorPersona | currency : 'COP' : 'symbol-narrow' : '1.0-0' }}
             </td>
             <td class="p-3">
+              <span
+                class="inline-block rounded-full bg-emerald-100 text-emerald-800 px-3 py-1 text-xs"
+              >
+                Disponible
+              </span>
+            </td>
+            <td class="p-3">
               <div class="flex gap-2">
-                <button
-                  (click)="editarServicio(s.id)"
+                <a
+                  [routerLink]="['/servicios', s.id, 'editar']"
                   class="inline-flex items-center rounded-lg border border-[#0a3d62] px-3 py-1 text-sm font-semibold text-[#0a3d62] hover:bg-[#0a3d62]/5"
                 >
                   Editar
-                </button>
+                </a>
                 <button
-                  (click)="eliminarServicio(s.id)"
+                  (click)="onDelete(s.id)"
                   class="rounded-lg bg-rose-600 px-3 py-1 text-sm font-semibold text-white hover:bg-rose-700"
                 >
                   Eliminar
@@ -96,7 +74,7 @@
 
   <!-- Sin servicios (desktop) -->
   <div
-    *ngIf="servicios?.length === 0"
+    *ngIf="(servicios$ | async)?.length === 0"
     class="hidden lg:flex flex-col items-center justify-center py-12 text-slate-500"
   >
     <p>No hay servicios creados aún.</p>
@@ -105,44 +83,32 @@
 
   <!-- Cards (móvil) -->
   <section
-    *ngIf="servicios?.length > 0"
+    *ngIf="(servicios$ | async) && (servicios$ | async)!.length > 0"
     class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6 lg:hidden"
   >
     <article
-      *ngFor="let s of servicios"
+      *ngFor="let s of servicios$ | async; trackBy: trackById"
       class="rounded-2xl border border-slate-200 shadow hover:shadow-lg overflow-hidden"
     >
-      <div class="relative h-44">
-        <img
-          [src]="s.imagenes?.length ? s.imagenes[0].url : '/assets/img/placeholder-servicio.jpg'"
-          alt="Imagen servicio"
-          class="absolute inset-0 w-full h-full object-cover"
-        />
-        <span
-          class="absolute top-3 right-3 rounded-lg bg-white/90 border border-slate-200 px-2 py-1 text-xs font-semibold"
-        >
-          {{ s.precioPorPersona | currency : 'COP' : 'symbol-narrow' : '1.0-0' }}
-        </span>
-      </div>
       <div class="p-4">
         <h3 class="text-lg font-semibold">{{ s.nombre }}</h3>
-        <p class="text-sm text-slate-500 mt-1">{{ s.lugar }}</p>
         <p class="text-sm text-slate-600 mt-2 line-clamp-2">{{ s.descripcion || '-' }}</p>
 
-        <div class="flex flex-wrap gap-2 mt-3 text-xs text-slate-600">
-          <span class="rounded-full bg-slate-100 px-3 py-1">{{ s.duracionMinutos }} min</span>
-          <span class="rounded-full bg-slate-100 px-3 py-1">👥 {{ s.capacidadMaxima || '-' }}</span>
+        <div class="flex flex-wrap gap-2 mt-3 text-xs">
+          <span class="font-semibold whitespace-nowrap">
+            {{ s.precioPorPersona | currency : 'COP' : 'symbol-narrow' : '1.0-0' }}
+          </span>
         </div>
 
         <div class="flex gap-2 mt-4">
-          <button
-            (click)="editarServicio(s.id)"
+          <a
+            [routerLink]="['/servicios', s.id, 'editar']"
             class="inline-flex items-center rounded-lg border border-[#0a3d62] px-3 py-1 text-sm font-semibold text-[#0a3d62] hover:bg-[#0a3d62]/5"
           >
             Editar
-          </button>
+          </a>
           <button
-            (click)="eliminarServicio(s.id)"
+            (click)="onDelete(s.id)"
             class="rounded-lg bg-rose-600 px-3 py-1 text-sm font-semibold text-white hover:bg-rose-700"
           >
             Eliminar
@@ -154,7 +120,7 @@
 
   <!-- Sin servicios (móvil) -->
   <div
-    *ngIf="servicios?.length === 0"
+    *ngIf="(servicios$ | async)?.length === 0"
     class="lg:hidden border rounded-xl p-6 text-center text-slate-500 mt-6"
   >
     No hay servicios creados aún.
