@@ -1,71 +1,89 @@
-<div class="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
+<main class="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
   <div class="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-8">
-    <h1 class="text-3xl font-serif text-center mb-6">
+    <h1 class="text-3xl font-serif text-center mb-6 text-[#0a3d62]">
       {{ habitacion?.id ? 'Editar habitación' : 'Nueva habitación' }}
     </h1>
 
-    <form
-      class="space-y-4"
-      (ngSubmit)="guardar()"
-      #habitacionForm="ngForm"
-      novalidate
-    >
+    <p class="text-slate-600 text-center mb-6">Completa la información de la habitación.</p>
+
+    <form class="space-y-5" (ngSubmit)="guardar()" #habitacionForm="ngForm" novalidate>
       <!-- Número -->
       <div>
-        <label class="block font-semibold mb-1">Número</label>
+        <label for="numero" class="block font-semibold mb-1 text-sm text-slate-700">Número</label>
         <input
-          type="text"
+          id="numero"
+          type="number"
+          min="1"
           [(ngModel)]="habitacion.numero"
           name="numero"
           required
-          class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-indigo-300"
+          class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#cfa15a]/40"
+          placeholder="Ej. 101"
         />
+        <div
+          *ngIf="habitacionForm.submitted && !habitacion.numero"
+          class="text-red-600 text-xs mt-1"
+        >
+          El número es obligatorio.
+        </div>
       </div>
 
       <!-- Piso -->
       <div>
-        <label class="block font-semibold mb-1">Piso</label>
+        <label for="piso" class="block font-semibold mb-1 text-sm text-slate-700">Piso</label>
         <input
+          id="piso"
           type="number"
+          min="1"
           [(ngModel)]="habitacion.piso"
           name="piso"
-          min="1"
-          class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-indigo-300"
+          class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#cfa15a]/40"
+          placeholder="Ej. 2"
         />
       </div>
 
-      <!-- Tipo -->
+      <!-- Tipo de habitación -->
       <div>
-        <label class="block font-semibold mb-1">Tipo de habitación</label>
+        <label for="tipoId" class="block font-semibold mb-1 text-sm text-slate-700"
+          >Tipo de habitación</label
+        >
         <select
+          id="tipoId"
           [(ngModel)]="habitacion.tipoId"
           name="tipoId"
           required
-          class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-indigo-300"
+          class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#cfa15a]/40"
         >
           <option [ngValue]="null" disabled>Seleccione un tipo</option>
-          <option *ngFor="let tipo of tiposHabitacion" [value]="tipo.id">
+          <option *ngFor="let tipo of tiposHabitacion" [ngValue]="tipo.id">
             {{ tipo.nombre }}
           </option>
         </select>
+        <div
+          *ngIf="habitacionForm.submitted && !habitacion.tipoId"
+          class="text-red-600 text-xs mt-1"
+        >
+          Debe seleccionar un tipo.
+        </div>
       </div>
 
       <!-- Activa -->
       <div class="flex items-center gap-2">
         <input
+          id="activa"
           type="checkbox"
           [(ngModel)]="habitacion.activa"
           name="activa"
-          class="h-4 w-4 accent-indigo-600"
+          class="h-4 w-4 accent-[#cfa15a]"
         />
-        <label class="font-medium">Activa</label>
+        <label for="activa" class="font-medium text-slate-700">Activa</label>
       </div>
 
       <!-- Botones -->
-      <div class="flex justify-between pt-4">
+      <div class="flex justify-between pt-6 border-t border-slate-200">
         <button
           type="button"
-          class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
+          class="px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
           routerLink="/habitaciones"
         >
           Cancelar
@@ -74,116 +92,11 @@
         <button
           type="submit"
           [disabled]="habitacionForm.invalid"
-          class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+          class="px-4 py-2 rounded-lg bg-[#cfa15a] text-white font-semibold hover:bg-[#b48e4f] disabled:opacity-50"
         >
           {{ habitacion?.id ? 'Actualizar' : 'Guardar' }}
         </button>
       </div>
     </form>
   </div>
-</div>
-<body class="bg-white text-slate-800">
-    <!-- Header -->
-    <div th:replace="fragments/navbar_admin :: navbar_admin"></div>
-
-    <!-- Main -->
-    <main class="max-w-3xl mx-auto px-6">
-      <h1
-        th:text="${habitacion.id} != null ? 'Editar habitación' : 'Nueva habitación'"
-        class="text-2xl text-blue-900 mt-6 mb-1"
-      >
-        Habitación
-      </h1>
-      <p class="text-slate-600 mb-3">
-        Completa la información de la habitación.
-      </p>
-
-      <!-- Card -->
-      <div class="border border-slate-200 rounded-2xl shadow p-6">
-        <form
-          th:object="${habitacion}"
-          th:action="@{${habitacion.id} != null ? '/habitaciones/' + ${habitacion.id} : '/habitaciones'}"
-          method="post"
-          class="space-y-6"
-        >
-          <input type="hidden" th:field="*{id}" />
-
-          <!-- Grid 2 columnas -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="flex flex-col gap-1">
-              <label for="numero" class="font-semibold text-sm">Número</label>
-              <input
-                id="numero"
-                type="number"
-                min="1"
-                th:field="*{numero}"
-                placeholder="101"
-                required
-                class="border border-slate-200 rounded-xl px-3 py-2 focus:ring focus:ring-blue-200"
-              />
-            </div>
-
-            <div class="flex flex-col gap-1">
-              <label for="tipoId" class="font-semibold text-sm"
-                >Tipo de habitación</label
-              >
-              <select
-                id="tipoId"
-                name="tipoId"
-                required
-                class="border border-slate-200 rounded-xl px-3 py-2 focus:ring focus:ring-blue-200"
-              >
-                <option
-                  value=""
-                  disabled
-                  th:if="${habitacion.tipo == null}"
-                  selected
-                >
-                  Selecciona un tipo
-                </option>
-                <option
-                  th:each="t : ${tipos}"
-                  th:value="${t.id}"
-                  th:selected="${habitacion.tipo != null} ? ${t.id} == ${habitacion.tipo.id} : false"
-                  th:text="${t.nombre}"
-                ></option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Estado -->
-          <div class="flex flex-col gap-1">
-            <label for="activa" class="font-semibold text-sm">Estado</label>
-            <select
-              id="activa"
-              th:field="*{activa}"
-              required
-              class="border border-slate-200 rounded-xl px-3 py-2 focus:ring focus:ring-blue-200"
-            >
-              <option th:value="true">Activa</option>
-              <option th:value="false">Inactiva</option>
-            </select>
-          </div>
-
-          <!-- Footer botones -->
-          <div class="flex justify-end gap-3 pt-4 border-t border-slate-200">
-            <a
-              th:href="@{/habitaciones}"
-              class="inline-flex items-center px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50"
-              >Cancelar</a
-            >
-            <button
-              type="submit"
-              class="inline-flex items-center px-4 py-2 rounded-xl bg-amber-600 text-white shadow hover:bg-amber-700"
-              th:text="${habitacion.id} != null ? 'Guardar cambios' : 'Crear habitación'"
-            >
-              Guardar
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <div class="h-4"></div>
-    </main>
-  </body>
-</html>
+</main>
