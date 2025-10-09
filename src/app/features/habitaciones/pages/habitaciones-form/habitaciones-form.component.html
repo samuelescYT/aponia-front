@@ -1,0 +1,189 @@
+<div class="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
+  <div class="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-8">
+    <h1 class="text-3xl font-serif text-center mb-6">
+      {{ habitacion?.id ? 'Editar habitación' : 'Nueva habitación' }}
+    </h1>
+
+    <form
+      class="space-y-4"
+      (ngSubmit)="guardar()"
+      #habitacionForm="ngForm"
+      novalidate
+    >
+      <!-- Número -->
+      <div>
+        <label class="block font-semibold mb-1">Número</label>
+        <input
+          type="text"
+          [(ngModel)]="habitacion.numero"
+          name="numero"
+          required
+          class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-indigo-300"
+        />
+      </div>
+
+      <!-- Piso -->
+      <div>
+        <label class="block font-semibold mb-1">Piso</label>
+        <input
+          type="number"
+          [(ngModel)]="habitacion.piso"
+          name="piso"
+          min="1"
+          class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-indigo-300"
+        />
+      </div>
+
+      <!-- Tipo -->
+      <div>
+        <label class="block font-semibold mb-1">Tipo de habitación</label>
+        <select
+          [(ngModel)]="habitacion.tipoId"
+          name="tipoId"
+          required
+          class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring focus:ring-indigo-300"
+        >
+          <option [ngValue]="null" disabled>Seleccione un tipo</option>
+          <option *ngFor="let tipo of tiposHabitacion" [value]="tipo.id">
+            {{ tipo.nombre }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Activa -->
+      <div class="flex items-center gap-2">
+        <input
+          type="checkbox"
+          [(ngModel)]="habitacion.activa"
+          name="activa"
+          class="h-4 w-4 accent-indigo-600"
+        />
+        <label class="font-medium">Activa</label>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex justify-between pt-4">
+        <button
+          type="button"
+          class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
+          routerLink="/habitaciones"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          [disabled]="habitacionForm.invalid"
+          class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+        >
+          {{ habitacion?.id ? 'Actualizar' : 'Guardar' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<body class="bg-white text-slate-800">
+    <!-- Header -->
+    <div th:replace="fragments/navbar_admin :: navbar_admin"></div>
+
+    <!-- Main -->
+    <main class="max-w-3xl mx-auto px-6">
+      <h1
+        th:text="${habitacion.id} != null ? 'Editar habitación' : 'Nueva habitación'"
+        class="text-2xl text-blue-900 mt-6 mb-1"
+      >
+        Habitación
+      </h1>
+      <p class="text-slate-600 mb-3">
+        Completa la información de la habitación.
+      </p>
+
+      <!-- Card -->
+      <div class="border border-slate-200 rounded-2xl shadow p-6">
+        <form
+          th:object="${habitacion}"
+          th:action="@{${habitacion.id} != null ? '/habitaciones/' + ${habitacion.id} : '/habitaciones'}"
+          method="post"
+          class="space-y-6"
+        >
+          <input type="hidden" th:field="*{id}" />
+
+          <!-- Grid 2 columnas -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1">
+              <label for="numero" class="font-semibold text-sm">Número</label>
+              <input
+                id="numero"
+                type="number"
+                min="1"
+                th:field="*{numero}"
+                placeholder="101"
+                required
+                class="border border-slate-200 rounded-xl px-3 py-2 focus:ring focus:ring-blue-200"
+              />
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label for="tipoId" class="font-semibold text-sm"
+                >Tipo de habitación</label
+              >
+              <select
+                id="tipoId"
+                name="tipoId"
+                required
+                class="border border-slate-200 rounded-xl px-3 py-2 focus:ring focus:ring-blue-200"
+              >
+                <option
+                  value=""
+                  disabled
+                  th:if="${habitacion.tipo == null}"
+                  selected
+                >
+                  Selecciona un tipo
+                </option>
+                <option
+                  th:each="t : ${tipos}"
+                  th:value="${t.id}"
+                  th:selected="${habitacion.tipo != null} ? ${t.id} == ${habitacion.tipo.id} : false"
+                  th:text="${t.nombre}"
+                ></option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Estado -->
+          <div class="flex flex-col gap-1">
+            <label for="activa" class="font-semibold text-sm">Estado</label>
+            <select
+              id="activa"
+              th:field="*{activa}"
+              required
+              class="border border-slate-200 rounded-xl px-3 py-2 focus:ring focus:ring-blue-200"
+            >
+              <option th:value="true">Activa</option>
+              <option th:value="false">Inactiva</option>
+            </select>
+          </div>
+
+          <!-- Footer botones -->
+          <div class="flex justify-end gap-3 pt-4 border-t border-slate-200">
+            <a
+              th:href="@{/habitaciones}"
+              class="inline-flex items-center px-4 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50"
+              >Cancelar</a
+            >
+            <button
+              type="submit"
+              class="inline-flex items-center px-4 py-2 rounded-xl bg-amber-600 text-white shadow hover:bg-amber-700"
+              th:text="${habitacion.id} != null ? 'Guardar cambios' : 'Crear habitación'"
+            >
+              Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="h-4"></div>
+    </main>
+  </body>
+</html>
