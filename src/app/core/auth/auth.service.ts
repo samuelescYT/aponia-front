@@ -1,16 +1,20 @@
 // src/app/core/services/auth.service.ts
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-interface LoginResponse {
-  ok: boolean;
-  rol?: string;
-  error?: string;
+interface Usuario {
+  id: string;
+  email: string;
+  nombreCompleto?: string | null;
+  rol: string;
 }
 
-interface RegisterResponse {
+interface ApiResponse {
   ok: boolean;
   id?: string;
+  email?: string;
+  nombreCompleto?: string;
+  rol?: string;
   error?: string;
 }
 
@@ -19,47 +23,41 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly api = 'http://localhost:8083/api/auth';
 
-  // 🔄 Estado reactivo con signals
-  loggedIn = signal(false);
-  role = signal<string | null>(null);
-  email = signal<string | null>(null);
+  // Estado reactivo
+  user = signal<Usuario | null>(null);
+  loggedIn = computed(() => !!this.user());
+  role = computed(() => this.user()?.rol ?? null);
 
+  // ===================== LOGIN =====================
   async login(email: string, password: string): Promise<boolean> {
     try {
       const res = await this.http
-        .post<LoginResponse>(`${this.api}/login`, { email, password })
+        .post<ApiResponse>(`${this.api}/login`, { email, password }, { withCredentials: true })
         .toPromise();
 
       if (res?.ok) {
-        this.loggedIn.set(true);
-        this.role.set(res.rol ?? null);
-        this.email.set(email);
+        await this.restoreSession(); // obtiene los datos reales desde /me
         return true;
-      } else {
-        this.loggedIn.set(false);
-        return false;
       }
+      return false;
     } catch {
-      this.loggedIn.set(false);
       return false;
     }
   }
 
+  // ===================== REGISTER =====================
   async register(nombreCompleto: string, email: string, telefono: string, password: string): Promise<boolean> {
     try {
       const res = await this.http
-        .post<RegisterResponse>(`${this.api}/register`, {
-          nombreCompleto,
-          email,
-          telefono,
-          password,
-        })
+        .post<ApiResponse>(
+          `${this.api}/register`,
+          { nombreCompleto, email, telefono, password },
+          { withCredentials: true }
+        )
         .toPromise();
 
       if (res?.ok) {
-        this.loggedIn.set(true);
-        this.email.set(email);
-        this.role.set('CLIENTE');
+        await this.restoreSession();
         return true;
       }
       return false;
@@ -68,10 +66,34 @@ export class AuthService {
     }
   }
 
+  // ===================== RESTORE SESSION =====================
+  async restoreSession(): Promise<void> {
+    try {
+      const res = await this.http
+        .get<ApiResponse>(`${this.api}/me`, { withCredentials: true })
+        .toPromise();
+
+      if (res?.ok && res.id && res.email && res.rol) {
+        this.user.set({
+          id: res.id,
+          email: res.email,
+          nombreCompleto: res.nombreCompleto ?? null,
+          rol: res.rol,
+        });
+      } else {
+        this.user.set(null);
+      }
+    } catch {
+      this.user.set(null);
+    }
+  }
+
+  // ===================== LOGOUT =====================
   async logout(): Promise<void> {
-    await this.http.post(`${this.api}/logout`, {}).toPromise();
-    this.loggedIn.set(false);
-    this.role.set(null);
-    this.email.set(null);
+    try {
+      await this.http.post(`${this.api}/logout`, {}, { withCredentials: true }).toPromise();
+    } finally {
+      this.user.set(null);
+    }
   }
 }

@@ -10,23 +10,17 @@ import { ServiciosFormComponent } from './features/servicios/pages/servicios-for
 import { ServiciosListComponent } from './features/servicios/pages/servicios-list/servicios-list.component';
 import { DisponibilidadListComponent } from './features/servicios-disponibilidad/pages/disponibilidad-list/disponibilidad-list.component';
 import { DisponibilidadFormComponent } from './features/servicios-disponibilidad/pages/disponibilidad-form/disponibilidad-form.component';
+import { DashboardComponent } from './features/dashboard/pages/dashboard.component/dashboard.component';
 
 export const routes: Routes = [
   { path: '', component: LandingPageComponent, title: 'Aponia – Hotel & Experiencias' },
+  { path: 'dashboard', component: DashboardComponent, title: 'Dashboard – Aponia' },
   { path: 'habitaciones-tipos', component: HabitacionTiposListComponent, title: 'Tipos de habitación – Aponia' },
   { path: 'habitaciones-tipos/nuevo', component: HabitacionTipoFormComponent, title: 'Nuevo tipo – Aponia' },
   { path: 'habitaciones-tipos/:id/editar', component: HabitacionTipoFormComponent, title: 'Editar tipo – Aponia' },
   { path: 'habitaciones', component: HabitacionesListComponent, title: 'Habitaciones – Aponia' },
   { path: 'habitaciones/nueva', component: HabitacionesFormComponent, title: 'Nueva habitación – Aponia' },
   { path: 'habitaciones/:id/editar', component: HabitacionesFormComponent, title: 'Editar habitación – Aponia' },
-  // {
-  //   path: 'login',
-  //   loadComponent: () => import('./features/auth/pages/login/login.component').then(m => m.LoginPageComponent),
-  // },
-  // {
-  //   path: 'register',
-  //   loadComponent: () => import('./features/auth/pages/register/register.component').then(m => m.RegisterPageComponent),
-  // },
   { path: 'login', component: LoginPageComponent, title: 'Iniciar sesión – Aponia' },
   { path: 'register', component: RegisterPageComponent, title: 'Crear cuenta – Aponia' },
   { path: 'servicios', component: ServiciosListComponent, title: 'Servicios – Aponia' },
@@ -35,4 +29,5 @@ export const routes: Routes = [
   { path: 'disponibilidades', component: DisponibilidadListComponent, title: 'Disponibilidades – Aponia'},
   { path: 'disponibilidades/nueva', component: DisponibilidadFormComponent, title: 'Nueva disponibilidad – Aponia' },
   { path: 'disponibilidades/:id/editar', component: DisponibilidadFormComponent, title: 'Editar disponibilidad – Aponia' },
+
 ];

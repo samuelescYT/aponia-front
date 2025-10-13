@@ -33,7 +33,17 @@ export class LoginPageComponent {
     const { email, password } = this.form.getRawValue();
     const ok = await this.auth.login(email, password);
     if (ok) {
-      this.router.navigateByUrl('/');
+      if(this.auth.role() === 'CLIENTE') {
+        this.router.navigateByUrl('/dashboard');
+      }
+
+      if(this.auth.role() === 'ADMIN') {
+       console.log("redirigir a panel de administrador");
+      }
+
+      if(this.auth.role() === 'RECEPCIONISTA') {
+        console.log("redirigir a panel de recepcionista");
+      }
       return;
     }
     this.error.set('Credenciales inválidas');
