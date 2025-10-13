@@ -1,0 +1,64 @@
+<div class="flex flex-col items-center justify-center h-[calc(100vh-8rem)] text-center select-none">
+  <!-- ICONO PRINCIPAL -->
+  <div class="mb-6 flex items-center justify-center rounded-full bg-aponia-primary/10 p-6">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         class="w-12 h-12 text-aponia-primary"
+         fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+            d="M12 11c1.657 0 3-1.343 3-3S13.657 5 12 5 9 6.343 9 8s1.343 3 3 3zm0 2c-3.866 0-7 1.79-7 4v2h14v-2c0-2.21-3.134-4-7-4z" />
+    </svg>
+  </div>
+
+  <!-- TITULO -->
+  <h1 class="text-3xl font-semibold text-aponia-primary mb-2">
+    ¡Bienvenido, {{ auth.user()?.nombreCompleto ?? 'Administrador' }}!
+  </h1>
+
+  <p class="text-slate-600 max-w-md">
+    Desde aquí puedes gestionar las entidades del sistema: habitaciones, usuarios, servicios y reservas.
+  </p>
+
+  <!-- BOTONES DE ACCESO RÁPIDO -->
+  <div class="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-6">
+    <a
+      class="flex flex-col items-center justify-center p-6 bg-white rounded-2xl shadow hover:shadow-lg transition cursor-pointer border border-slate-200 hover:border-aponia-primary"
+      routerLink="/dashboard/habitacion-tipo"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-aponia-primary mb-3" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 10h18M3 16h18M5 6h14a2 2 0 012 2v10H3V8a2 2 0 012-2z" />
+      </svg>
+      <span class="font-medium">Tipos de Habitaciones</span>
+    </a>
+
+    <a
+      class="flex flex-col items-center justify-center p-6 bg-white rounded-2xl shadow hover:shadow-lg transition cursor-pointer border border-slate-200 hover:border-aponia-primary"
+      routerLink="/dashboard/usuarios"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-aponia-primary mb-3" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M5.121 17.804A4 4 0 018 16h8a4 4 0 012.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      <span class="font-medium">Usuarios</span>
+    </a>
+
+    <a
+      class="flex flex-col items-center justify-center p-6 bg-white rounded-2xl shadow hover:shadow-lg transition cursor-pointer border border-slate-200 hover:border-aponia-primary"
+      routerLink="/dashboard/reservas"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-aponia-primary mb-3" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 7V3h8v4m-9 4h10M5 21h14a2 2 0 002-2V7H3v12a2 2 0 002 2z" />
+      </svg>
+      <span class="font-medium">Reservas</span>
+    </a>
+  </div>
+
+  <!-- FOOTER -->
+  <p class="text-xs text-slate-400 mt-8">
+    Panel administrativo del sistema Aponia Hotel - Todos los derechos reservados
+  </p>
+</div>

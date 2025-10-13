@@ -1,0 +1,7 @@
+<app-header-admin></app-header-admin>
+
+<app-side-bar-admin></app-side-bar-admin>
+
+<div [class.pl-68]="sideBar.sidebarOpen()" [class.pl-26]="!sideBar.sidebarOpen()" class="bg-stone-50 pt-4 pr-6 transition-all duration-300">
+  <router-outlet></router-outlet>
+</div>

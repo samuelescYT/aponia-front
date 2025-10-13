@@ -10,24 +10,53 @@ import { ServiciosFormComponent } from './features/servicios/pages/servicios-for
 import { ServiciosListComponent } from './features/servicios/pages/servicios-list/servicios-list.component';
 import { DisponibilidadListComponent } from './features/servicios-disponibilidad/pages/disponibilidad-list/disponibilidad-list.component';
 import { DisponibilidadFormComponent } from './features/servicios-disponibilidad/pages/disponibilidad-form/disponibilidad-form.component';
-import { DashboardComponent } from './features/dashboard/pages/dashboard.component/dashboard.component';
+import { DashboardComponent } from './features/dashboard/pages/dashboard/dashboard.component';
+import { RegisterAdminComponent } from './features/auth/pages/register-admin/register-admin.component';
+import { DashboardAdminComponent } from './features/dashboard-admin/pages/dashboard-admin/dashboard-admin.component';
+import { HomeAdminComponent } from './features/dashboard-admin/components/home-admin/home-admin.component';
+
 
 export const routes: Routes = [
   { path: '', component: LandingPageComponent, title: 'Aponia – Hotel & Experiencias' },
-  { path: 'dashboard', component: DashboardComponent, title: 'Dashboard – Aponia' },
-  { path: 'habitaciones-tipos', component: HabitacionTiposListComponent, title: 'Tipos de habitación – Aponia' },
-  { path: 'habitaciones-tipos/nuevo', component: HabitacionTipoFormComponent, title: 'Nuevo tipo – Aponia' },
-  { path: 'habitaciones-tipos/:id/editar', component: HabitacionTipoFormComponent, title: 'Editar tipo – Aponia' },
-  { path: 'habitaciones', component: HabitacionesListComponent, title: 'Habitaciones – Aponia' },
-  { path: 'habitaciones/nueva', component: HabitacionesFormComponent, title: 'Nueva habitación – Aponia' },
-  { path: 'habitaciones/:id/editar', component: HabitacionesFormComponent, title: 'Editar habitación – Aponia' },
   { path: 'login', component: LoginPageComponent, title: 'Iniciar sesión – Aponia' },
   { path: 'register', component: RegisterPageComponent, title: 'Crear cuenta – Aponia' },
-  { path: 'servicios', component: ServiciosListComponent, title: 'Servicios – Aponia' },
-  { path: 'servicios/nuevo', component: ServiciosFormComponent, title: 'Nuevo servicio – Aponia' },
-  { path: 'servicios/:id/editar', component: ServiciosFormComponent, title: 'Editar servicio – Aponia' },
-  { path: 'disponibilidades', component: DisponibilidadListComponent, title: 'Disponibilidades – Aponia'},
-  { path: 'disponibilidades/nueva', component: DisponibilidadFormComponent, title: 'Nueva disponibilidad – Aponia' },
-  { path: 'disponibilidades/:id/editar', component: DisponibilidadFormComponent, title: 'Editar disponibilidad – Aponia' },
+  { path: 'register-admin', component: RegisterAdminComponent, title: 'Registrar admin – Aponia' },
+
+  //Dasbboard del cliente
+  { path: 'dashboard', component: DashboardComponent, title: 'Dashboard – Aponia'},
+  {
+    path: 'dashboard-admin',
+    component: DashboardAdminComponent,
+    title: 'Dashboard admin – Aponia',
+    children: [
+      {path: '', component: HomeAdminComponent},
+      { path: 'habitaciones-tipos', component: HabitacionTiposListComponent },
+      { path: 'habitaciones-tipos/nuevo', component: HabitacionTipoFormComponent },
+      { path: 'habitaciones-tipos/:id/editar', component: HabitacionTipoFormComponent },
+      { path: 'habitaciones', component: HabitacionesListComponent },
+      { path: 'habitaciones/nueva', component: HabitacionesFormComponent },
+      { path: 'habitaciones/:id/editar', component: HabitacionesFormComponent },
+      { path: 'servicios', component: ServiciosListComponent },
+      { path: 'servicios/nuevo', component: ServiciosFormComponent },
+      { path: 'servicios/:id/editar', component: ServiciosFormComponent },
+      { path: 'disponibilidad', component: DisponibilidadListComponent },
+      { path: 'disponibilidad/nueva', component: DisponibilidadFormComponent},
+      { path: 'disponibilidad/:id/editar', component: DisponibilidadFormComponent},
+    ]
+  },
+
+  //Dashboard del admin
+  // { path: 'habitaciones-tipos', component: HabitacionTiposListComponent, title: 'Tipos de habitación – Aponia' },
+  // { path: 'habitaciones-tipos/nuevo', component: HabitacionTipoFormComponent, title: 'Nuevo tipo – Aponia' },
+  // { path: 'habitaciones-tipos/:id/editar', component: HabitacionTipoFormComponent, title: 'Editar tipo – Aponia' },
+  // { path: 'habitaciones', component: HabitacionesListComponent, title: 'Habitaciones – Aponia' },
+  // { path: 'habitaciones/nueva', component: HabitacionesFormComponent, title: 'Nueva habitación – Aponia' },
+  // { path: 'habitaciones/:id/editar', component: HabitacionesFormComponent, title: 'Editar habitación – Aponia' },
+  // { path: 'servicios', component: ServiciosListComponent, title: 'Servicios – Aponia' },
+  // { path: 'servicios/nuevo', component: ServiciosFormComponent, title: 'Nuevo servicio – Aponia' },
+  // { path: 'servicios/:id/editar', component: ServiciosFormComponent, title: 'Editar servicio – Aponia' },
+  // { path: 'disponibilidades', component: DisponibilidadListComponent, title: 'Disponibilidades – Aponia' },
+  // { path: 'disponibilidades/nueva', component: DisponibilidadFormComponent, title: 'Nueva disponibilidad – Aponia' },
+  // { path: 'disponibilidades/:id/editar', component: DisponibilidadFormComponent, title: 'Editar disponibilidad – Aponia' },
 
 ];

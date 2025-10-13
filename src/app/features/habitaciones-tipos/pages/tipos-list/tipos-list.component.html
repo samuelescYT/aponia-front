@@ -1,10 +1,10 @@
-<main class="max-w-6xl mx-auto px-6 py-6">
+<main class="w-full mx-auto py-6">
   <div class="w-full flex items-center justify-between">
     <div>
       <h1 class="text-2xl text-blue-900 mb-1">Tipos de habitación</h1>
       <p class="text-slate-500 mb-4">Administra los tipos: aforo, rangos y precio por noche.</p>
     </div>
-    <a [routerLink]="['/habitaciones-tipos/nuevo']"
+    <a [routerLink]="['nuevo']"
        class="inline-flex items-center gap-1 rounded-xl bg-amber-600 text-white font-semibold px-4 py-2 shadow hover:bg-amber-500">
       ＋ Nuevo tipo
     </a>
@@ -49,7 +49,7 @@
                   <td class="px-4 py-3">
                     <div class="flex gap-2">
                       <a class="inline-flex items-center rounded-lg border border-blue-900 text-blue-900 px-3 py-1 text-sm hover:bg-blue-50"
-                         [routerLink]="['/habitaciones-tipos', tipo.id, 'editar']">Editar</a>
+                         [routerLink]="['habitaciones-tipos', tipo.id, 'editar']">Editar</a>
                       <button (click)="onDelete(tipo.id)"
                               class="rounded-lg bg-rose-600 text-white px-3 py-1 text-sm hover:bg-rose-500">
                         Eliminar

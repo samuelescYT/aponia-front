@@ -1,3 +1,16 @@
+// import { Component } from '@angular/core';
+
+// @Component({
+//   selector: 'app-register-admin',
+//   imports: [],
+//   templateUrl: './register-admin.component.html',
+//   styleUrl: './register-admin.component.scss'
+// })
+// export class RegisterAdminComponent {
+
+// }
+
+
 import { AuthService } from './../../../../core/auth/auth.service';
 import {
   ChangeDetectionStrategy,
@@ -9,13 +22,14 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-register-page',
+  selector: 'app-register-admin',
   imports: [ReactiveFormsModule, RouterLink],
-  templateUrl: './register.component.html',
+  templateUrl: './register-admin.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block h-screen text-slate-800 select-none' },
+  styleUrl: './register-admin.component.scss'
 })
-export class RegisterPageComponent {
+export class RegisterAdminComponent {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
@@ -31,9 +45,11 @@ export class RegisterPageComponent {
 
   async onSubmit(): Promise<void> {
     const { nombreCompleto, email, telefono, password } = this.form.getRawValue();
-    const ok = await this.auth.register(nombreCompleto, email, telefono, password);
+    const ok = await this.auth.registerAdmin(nombreCompleto, email, telefono, password);
     if (ok) {
-      this.router.navigateByUrl('/dashboard');
+      // this.router.navigateByUrl('/dashboard-admin');
+      console.log("Registro de administrador exitoso");
+      console.log(this.auth.user());
       return;
     }
     this.error.set('No se pudo registrar. Intenta de nuevo.');

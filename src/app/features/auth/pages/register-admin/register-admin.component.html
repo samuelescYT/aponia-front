@@ -4,15 +4,15 @@
 
       </div>
 
-      <div class="bg-aponia-neutral flex-[.8] h-full flex items-center justify-center">
+      <div class="bg-slate-900 flex-[.8] h-full flex items-center justify-center">
         <div
           class="p-8 rounded-2xl max-w-md w-full"
         >
-          <h1 class="text-2xl font-display font-bold text-center mb-2 text-aponia-primary">
+          <h1 class="text-2xl font-display font-bold text-center mb-2 text-aponia-secondary">
             Crear cuenta
           </h1>
 
-          <p class="text-sm text-center text-gray-500 mb-6">
+          <p class="text-sm text-center text-gray-200 mb-6">
             Registra tus datos para continuar
           </p>
 
@@ -26,7 +26,7 @@
 
           <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1"
+              <label class="block text-sm font-medium text-gray-400 mb-1"
                 >Correo electrónico</label
               >
               <input
@@ -34,13 +34,13 @@
                 formControlName="email"
                 placeholder="cliente@correo.com"
                 required
-                class="mt-1 px-4 w-full rounded-md border border-gray-300 shadow-sm
+                class="mt-1 px-4 w-full bg-aponia-white placeholder-gray-400 rounded-md border border-gray-300 shadow-sm
                        focus:border-aponia-primary focus:ring-aponia-primary outline-none py-2"
               />
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1"
+              <label class="block text-sm font-medium text-gray-400 mb-1"
                 >Contraseña</label
               >
               <input
@@ -48,13 +48,13 @@
                 formControlName="password"
                 placeholder="••••••••"
                 required
-                class="mt-1 px-4 w-full rounded-md border border-gray-300 shadow-sm
+                class="mt-1 px-4 w-full bg-aponia-white placeholder-gray-400 rounded-md border border-gray-300 shadow-sm
                        focus:border-aponia-primary focus:ring-aponia-primary outline-none py-2"
               />
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1"
+              <label class="block text-sm font-medium text-gray-400 mb-1"
                 >Nombre completo</label
               >
               <input
@@ -62,20 +62,20 @@
                 formControlName="nombreCompleto"
                 placeholder="Nombre y apellidos"
                 required
-                class="mt-1 px-4 w-full rounded-md border border-gray-300 shadow-sm
+                class="mt-1 px-4 w-full bg-aponia-white placeholder-gray-400 rounded-md border border-gray-300 shadow-sm
                        focus:border-aponia-primary focus:ring-aponia-primary outline-none py-2"
               />
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1"
+              <label class="block text-sm font-medium text-gray-400 mb-1"
                 >Teléfono (opcional)</label
               >
               <input
                 type="text"
                 formControlName="telefono"
                 placeholder="+57 3xx xxx xxxx"
-                class="mt-1 px-4 w-full rounded-md border border-gray-300 shadow-sm
+                class="mt-1 px-4 bg-aponia-white placeholder-gray-400 w-full rounded-md border border-gray-300 shadow-sm
                        focus:border-aponia-primary focus:ring-aponia-primary outline-none py-2"
               />
             </div>
@@ -101,12 +101,12 @@
             </p>
 
             <p class="text-sm text-center text-gray-500 mt-4">
-              ¿Deseas registrar un administrador?
+              ¿Deseas registrar un cliente?
               <a
-                routerLink="/register-admin"
+                routerLink="/register"
                 class="text-aponia-secondary hover:text-aponia-secondary/80 font-medium"
               >
-                registrar admin
+                registrar cliente
               </a>
             </p>
           </form>

@@ -38,7 +38,7 @@ export class LoginPageComponent {
       }
 
       if(this.auth.role() === 'ADMIN') {
-       console.log("redirigir a panel de administrador");
+       this.router.navigateByUrl('/dashboard-admin');
       }
 
       if(this.auth.role() === 'RECEPCIONISTA') {

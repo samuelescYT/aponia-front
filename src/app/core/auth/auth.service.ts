@@ -45,7 +45,7 @@ export class AuthService {
     }
   }
 
-  // ===================== REGISTER =====================
+  // ===================== REGISTER CLIENTE =====================
   async register(nombreCompleto: string, email: string, telefono: string, password: string): Promise<boolean> {
     try {
       const res = await this.http
@@ -66,27 +66,59 @@ export class AuthService {
     }
   }
 
-  // ===================== RESTORE SESSION =====================
-  async restoreSession(): Promise<void> {
+  // ===================== REGISTER CLIENTE =====================
+  async registerAdmin(nombreCompleto: string, email: string, telefono: string, password: string): Promise<boolean> {
     try {
       const res = await this.http
-        .get<ApiResponse>(`${this.api}/me`, { withCredentials: true })
+        .post<ApiResponse>(
+          `${this.api}/register-admin`,
+          { nombreCompleto, email, telefono, password },
+          { withCredentials: true }
+        )
         .toPromise();
 
-      if (res?.ok && res.id && res.email && res.rol) {
-        this.user.set({
-          id: res.id,
-          email: res.email,
-          nombreCompleto: res.nombreCompleto ?? null,
-          rol: res.rol,
-        });
-      } else {
-        this.user.set(null);
+      if (res?.ok) {
+        await this.restoreSession();
+        return true;
       }
+      return false;
     } catch {
-      this.user.set(null);
+      return false;
     }
   }
+
+
+  // ===================== RESTORE SESSION =====================
+async restoreSession(): Promise<void> {
+  try {
+    const res = await this.http
+      .get<ApiResponse>(`${this.api}/me`, { withCredentials: true })
+      .toPromise();
+
+    if (res?.ok && res.id && res.email && res.rol) {
+      this.user.set({
+        id: res.id,
+        email: res.email,
+        nombreCompleto: res.nombreCompleto ?? null,
+        rol: res.rol,
+      });
+    } else {
+      this.user.set(null);
+    }
+  } catch (err: any) {
+    // 👇 manejo silencioso de errores esperados
+    if (err.status === 401) {
+      // Sesión expirada o inexistente, no hay que loguear nada
+      this.user.set(null);
+      return;
+    }
+
+    // 👇 solo loguea si es algo inesperado (como fallo del servidor)
+    console.error('Error restaurando sesión:', err);
+    this.user.set(null);
+  }
+}
+
 
   // ===================== LOGOUT =====================
   async logout(): Promise<void> {

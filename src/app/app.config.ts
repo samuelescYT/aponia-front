@@ -31,7 +31,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(
       withFetch(), // backend basado en fetch
-      withInterceptors([withCredentialsInterceptor]),
     ),
   ],
 };

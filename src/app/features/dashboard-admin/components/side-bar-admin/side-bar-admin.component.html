@@ -1,0 +1,83 @@
+<aside
+  class="h-screen fixed top-0 left-0 pt-16 bg-aponia-white text-slate-700 flex flex-col transition-all duration-300 select-none shadow-right shadow-sm"
+  [class.w-60]="sideBar.sidebarOpen()"
+  [class.w-20]="!sideBar.sidebarOpen()"
+>
+  <!-- NAV LINKS -->
+  <nav class="flex-1 flex flex-col gap-1 mt-4">
+    <!-- INICIO -->
+    <a
+      routerLink="/dashboard-admin"
+      class="flex items-center justify-center gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 12l9-9 9 9M4 10v10h5v-6h6v6h5V10" />
+      </svg>
+      <span [class.hidden]="!sideBar.sidebarOpen()">Inicio</span>
+    </a>
+
+    <!-- TIPOS DE HABITACIONES -->
+    <a
+      routerLink="habitaciones-tipos"
+      class="flex items-center justify-center gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 10h18M3 16h18M5 6h14a2 2 0 012 2v10H3V8a2 2 0 012-2z" />
+      </svg>
+      <span [class.hidden]="!sideBar.sidebarOpen()">Tipos de Habitaciones</span>
+    </a>
+
+    <!-- HABITACIONES -->
+    <a
+
+      class="flex items-center justify-center gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M2 12h20M2 16h20M2 8h20M6 20h12M6 4h12" />
+      </svg>
+      <span [class.hidden]="!sideBar.sidebarOpen()">Habitaciones</span>
+    </a>
+
+    <!-- SERVICIOS -->
+    <a
+      class="flex items-center justify-center gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M6 3h12l-1 9H7L6 3zm3 12h6v6H9v-6z" />
+      </svg>
+      <span [class.hidden]="!sideBar.sidebarOpen()">Servicios</span>
+    </a>
+
+    <!-- USUARIOS -->
+    <a
+      class="flex items-center justify-center gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M5.121 17.804A4 4 0 018 16h8a4 4 0 012.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      <span [class.hidden]="!sideBar.sidebarOpen()">Usuarios</span>
+    </a>
+
+    <!-- RESERVAS -->
+    <a
+      class="flex items-center justify-center  gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 7V3h8v4m-9 4h10M5 21h14a2 2 0 002-2V7H3v12a2 2 0 002 2z" />
+      </svg>
+      <span [class.hidden]="!sideBar.sidebarOpen()">Reservas</span>
+    </a>
+  </nav>
+</aside>

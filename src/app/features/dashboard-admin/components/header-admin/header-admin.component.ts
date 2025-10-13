@@ -1,18 +1,22 @@
-import { AuthService } from './../../../../core/auth/auth.service';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, computed, inject, signal } from '@angular/core';
+import { AuthService } from '../../../../core/auth/auth.service';
 import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { leftSidebarService } from '../../../../core/admin/left-sideBar.service';
 
 @Component({
-  selector: 'app-header-cliente',
+  selector: 'app-header-admin',
   imports: [CommonModule, RouterLink],
-  templateUrl: './header-cliente.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'sticky top-0 inset-x-0 z-50 bg-white/80 backdrop-blur border-b border-slate-200 select-none' },
+  templateUrl: './header-admin.component.html',
+  styleUrl: './header-admin.component.scss',
+  host: {class: 'sticky top-0 inset-x-0 z-50 bg-white/80 backdrop-blur border-b border-slate-200 select-none'}
 })
-export class HeaderClienteComponent {
+export class HeaderAdminComponent {
   private auth = inject(AuthService);
   private router = inject(Router);
+
+  sideBar = inject(leftSidebarService)
+
 
   // Estado local para el menú desplegable
   menuOpen = signal(false);

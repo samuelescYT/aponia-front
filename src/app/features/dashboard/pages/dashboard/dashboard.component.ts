@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { HeaderClienteComponent } from '../../components/header-cliente.component/header-cliente.component';
+import { AuthService } from '../../../../core/auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard.component',
@@ -8,5 +10,12 @@ import { HeaderClienteComponent } from '../../components/header-cliente.componen
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent {
+  auth = inject(AuthService)
+  router = inject(Router)
 
+  async ngOnInit() {
+    if (!this.auth.loggedIn()) {
+      await this.router.navigateByUrl('/');
+    }
+  }
 }
