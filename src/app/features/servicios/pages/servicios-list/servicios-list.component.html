@@ -1,129 +1,67 @@
-<main class="max-w-6xl mx-auto px-6 py-6">
-  <!-- Encabezado -->
-  <section>
-    <h1 class="text-3xl text-[#0a3d62] font-bold">Servicios</h1>
-    <p class="text-slate-600 mt-1">Gestiona los servicios disponibles en el hotel.</p>
-
-    <div class="flex flex-wrap items-center justify-between gap-4 mt-4">
-      <a
-        routerLink="/servicios/nuevo"
-        class="inline-flex items-center gap-2 rounded-xl bg-[#cfa15a] px-4 py-2 font-semibold text-white shadow hover:shadow-lg active:translate-y-px"
-      >
-        <span class="text-lg leading-none">＋</span> Nuevo servicio
-      </a>
-      <span class="text-sm text-slate-500">Total: {{ (servicios$ | async)?.length || 0 }}</span>
+<main class="w-full mx-auto py-6">
+  <div class="w-full flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl text-blue-900 mb-1">Servicios</h1>
+      <p class="text-slate-500 mb-4">Administra los servicios ofrecidos por el hotel.</p>
     </div>
-  </section>
-
-  <!-- Tabla (desktop) -->
-  <section
-    *ngIf="(servicios$ | async) && (servicios$ | async)!.length > 0"
-    class="hidden lg:block mt-6 rounded-2xl border border-slate-200 shadow"
-  >
-    <div class="overflow-auto rounded-2xl">
-      <table class="w-full min-w-[960px] border-collapse">
-        <thead>
-          <tr class="bg-slate-50 text-left text-[11px] uppercase text-slate-800">
-            <th class="p-3">Nombre</th>
-            <th class="p-3">Descripción</th>
-            <th class="p-3">Precio / persona</th>
-            <th class="p-3">Estado</th>
-            <th class="p-3">Acciones</th>
-          </tr>
-        </thead>
-        <tbody class="text-sm">
-          <tr
-            *ngFor="let s of servicios$ | async; trackBy: trackById"
-            class="border-t border-slate-200 hover:bg-slate-50"
-          >
-            <td class="p-3">
-              <div class="font-semibold">{{ s.nombre }}</div>
-            </td>
-            <td class="p-3 text-slate-600">{{ s.descripcion || '-' }}</td>
-            <td class="p-3 font-semibold whitespace-nowrap">
-              {{ s.precioPorPersona | currency : 'COP' : 'symbol-narrow' : '1.0-0' }}
-            </td>
-            <td class="p-3">
-              <span
-                class="inline-block rounded-full bg-emerald-100 text-emerald-800 px-3 py-1 text-xs"
-              >
-                Disponible
-              </span>
-            </td>
-            <td class="p-3">
-              <div class="flex gap-2">
-                <a
-                  [routerLink]="['/servicios', s.id, 'editar']"
-                  class="inline-flex items-center rounded-lg border border-[#0a3d62] px-3 py-1 text-sm font-semibold text-[#0a3d62] hover:bg-[#0a3d62]/5"
-                >
-                  Editar
-                </a>
-                <button
-                  (click)="onDelete(s.id)"
-                  class="rounded-lg bg-rose-600 px-3 py-1 text-sm font-semibold text-white hover:bg-rose-700"
-                >
-                  Eliminar
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- Sin servicios (desktop) -->
-  <div
-    *ngIf="(servicios$ | async)?.length === 0"
-    class="hidden lg:flex flex-col items-center justify-center py-12 text-slate-500"
-  >
-    <p>No hay servicios creados aún.</p>
-    <a routerLink="/servicios/nuevo" class="font-semibold text-[#0a3d62] mt-1">Crear el primero</a>
+    <a [routerLink]="['nuevo']"
+       class="inline-flex items-center gap-1 rounded-xl bg-amber-600 text-white font-semibold px-4 py-2 shadow hover:bg-amber-500">
+      ＋ Nuevo servicio
+    </a>
   </div>
 
-  <!-- Cards (móvil) -->
-  <section
-    *ngIf="(servicios$ | async) && (servicios$ | async)!.length > 0"
-    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6 lg:hidden"
-  >
-    <article
-      *ngFor="let s of servicios$ | async; trackBy: trackById"
-      class="rounded-2xl border border-slate-200 shadow hover:shadow-lg overflow-hidden"
-    >
-      <div class="p-4">
-        <h3 class="text-lg font-semibold">{{ s.nombre }}</h3>
-        <p class="text-sm text-slate-600 mt-2 line-clamp-2">{{ s.descripcion || '-' }}</p>
+  <div class="border border-slate-200 rounded-2xl shadow">
+    <div class="overflow-x-auto">
+      @if (servicios(); as servicios) {
+        @if (servicios.length > 0) {
+          <table class="w-full min-w-[880px] border-collapse">
+            <thead>
+              <tr class="bg-slate-50 text-slate-800 text-xs uppercase tracking-wider">
+                <th class="text-left px-4 py-3">Imagen</th>
+                <th class="text-left px-4 py-3">Nombre</th>
+                <th class="text-left px-4 py-3">Lugar</th>
+                <th class="text-left px-4 py-3">Precio/persona</th>
+                <th class="text-left px-4 py-3">Duración</th>
+                <th class="text-left px-4 py-3">Acciones</th>
+              </tr>
+            </thead>
 
-        <div class="flex flex-wrap gap-2 mt-3 text-xs">
-          <span class="font-semibold whitespace-nowrap">
-            {{ s.precioPorPersona | currency : 'COP' : 'symbol-narrow' : '1.0-0' }}
-          </span>
-        </div>
+            <tbody class="text-sm">
+              @for (s of servicios; track s.id) {
+                <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                  <td class="px-4 py-2">
+                    <img [src]="s.imagenesUrls?.[0] || 'assets/placeholder.jpg'"
+                         alt="Imagen {{ s.nombre }}"
+                         class="w-20 h-16 object-cover rounded-xl border border-slate-200 bg-slate-100" />
+                  </td>
 
-        <div class="flex gap-2 mt-4">
-          <a
-            [routerLink]="['/servicios', s.id, 'editar']"
-            class="inline-flex items-center rounded-lg border border-[#0a3d62] px-3 py-1 text-sm font-semibold text-[#0a3d62] hover:bg-[#0a3d62]/5"
-          >
-            Editar
-          </a>
-          <button
-            (click)="onDelete(s.id)"
-            class="rounded-lg bg-rose-600 px-3 py-1 text-sm font-semibold text-white hover:bg-rose-700"
-          >
-            Eliminar
-          </button>
-        </div>
-      </div>
-    </article>
-  </section>
+                  <td class="px-4 py-3 font-semibold">{{ s.nombre }}</td>
+                  <td class="px-4 py-3">{{ s.lugar }}</td>
+                  <td class="px-4 py-3">{{ s.precioPorPersona | number: '1.0-0' }} COP</td>
+                  <td class="px-4 py-3">{{ s.duracionMinutos }} min</td>
 
-  <!-- Sin servicios (móvil) -->
-  <div
-    *ngIf="(servicios$ | async)?.length === 0"
-    class="lg:hidden border rounded-xl p-6 text-center text-slate-500 mt-6"
-  >
-    No hay servicios creados aún.
-    <a routerLink="/servicios/nuevo" class="font-semibold text-[#0a3d62]">Crear el primero</a>.
+                  <td class="px-4 py-3">
+                    <div class="flex gap-2">
+                      <a [routerLink]="['/dashboard-admin/servicios', s.id, 'editar']"
+                         class="inline-flex items-center rounded-lg border border-blue-900 text-blue-900 px-3 py-1 text-sm hover:bg-blue-50">
+                        Editar
+                      </a>
+                      <button (click)="onDelete(s.id)"
+                              class="rounded-lg bg-rose-600 text-white px-3 py-1 text-sm hover:bg-rose-500">
+                        Eliminar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <div class="px-6 py-8 text-center text-slate-400">No hay servicios registrados.</div>
+        }
+      } @else {
+        <div class="px-6 py-8 text-center text-slate-500">Cargando servicios...</div>
+      }
+    </div>
   </div>
 </main>

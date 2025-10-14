@@ -1,8 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { AsyncPipe } from '@angular/common';
-import { HabitacionesService } from '../../../../core/services/habitaciones/habitaciones.service';
+import { HabitacionService } from '../../../../core/services/habitaciones/habitaciones.service';
 import { Habitacion } from '../../../../shared/models/habitacion.model';
 
 @Component({
@@ -11,28 +10,36 @@ import { Habitacion } from '../../../../shared/models/habitacion.model';
   imports: [CommonModule, RouterLink],
   templateUrl: './habitaciones-list.component.html',
 })
-export class HabitacionesListComponent {
-  private service = inject(HabitacionesService);
+export class HabitacionesListComponent implements OnInit {
+  private service = inject(HabitacionService);
+  habitaciones = signal<Habitacion[]>([]);
+  loading = signal(true);
 
-  habitaciones$ = this.service.listar();
-
-  onDelete(id: string) {
-    const ok = confirm('¿Eliminar esta habitación?');
-    if (ok) {
-      this.service.eliminar(id).subscribe({
-        next: () => {
-          // recarga stream tras borrar
-          this.habitaciones$ = this.service.listar();
-        },
-        error: (err) => {
-          console.error('Error eliminando habitación', err);
-          alert('Error eliminando habitación');
-        },
-      });
-    }
+  ngOnInit() {
+    this.load();
   }
 
-  trackById(index: number, item: Habitacion) {
-    return item.id;
+  load() {
+    this.loading.set(true);
+    this.service.listAll().subscribe({
+      next: (data) => {
+        this.habitaciones.set(data);
+        console.log(this.habitaciones());
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Error cargando habitaciones', err);
+        this.loading.set(false);
+      },
+    });
+  }
+
+  onDelete(id: string) {
+    if (confirm('¿Eliminar esta habitación?')) {
+      this.service.delete(id).subscribe({
+        next: () => this.load(),
+        error: (err) => console.error('Error eliminando habitación', err),
+      });
+    }
   }
 }

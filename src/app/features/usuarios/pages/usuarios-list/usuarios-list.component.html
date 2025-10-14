@@ -1,0 +1,65 @@
+<main class="w-full mx-auto py-6">
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <h1 class="text-2xl text-blue-900 mb-1">Usuarios</h1>
+      <p class="text-slate-500">Gestión de usuarios y perfiles vinculados.</p>
+    </div>
+    <a [routerLink]="['nuevo']"
+       class="inline-flex items-center gap-1 rounded-xl bg-amber-600 text-white font-semibold px-4 py-2 shadow hover:bg-amber-500">
+      ＋ Nuevo usuario
+    </a>
+  </div>
+
+  <div class="border border-slate-200 rounded-2xl shadow overflow-x-auto">
+    @if (usuarios(); as lista) {
+      @if (lista.length > 0) {
+        <table class="w-full min-w-[900px] border-collapse">
+          <thead>
+            <tr class="bg-slate-50 text-slate-700 text-xs uppercase tracking-wide">
+              <th class="px-4 py-3 text-left">Email</th>
+              <th class="px-4 py-3 text-left">Rol</th>
+              <th class="px-4 py-3 text-left">Nombre</th>
+              <th class="px-4 py-3 text-left">Teléfono</th>
+              <th class="px-4 py-3 text-left">Cargo / Fecha</th>
+              <th class="px-4 py-3 text-left">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="text-sm">
+            @for (u of lista; track u.id) {
+              <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                <td class="px-4 py-3 font-medium">{{ u.email }}</td>
+                <td class="px-4 py-3">{{ u.rol }}</td>
+                <td class="px-4 py-3">{{ u.nombreCompleto || '—' }}</td>
+                <td class="px-4 py-3">{{ u.telefono || '—' }}</td>
+                <td class="px-4 py-3">
+                  @if (u.rol === 'CLIENTE') {
+                    {{ u.fechaRegistro ? (u.fechaRegistro | date: 'dd/MM/yyyy') : '—' }}
+                  } @else {
+                    {{ u.cargo || '—' }}<br />
+                    <span class="text-xs text-slate-500">{{ u.fechaContratacion | date: 'dd/MM/yyyy' }}</span>
+                  }
+                </td>
+                <td class="px-4 py-3">
+                  <div class="flex gap-2">
+                    <a [routerLink]="['/dashboard-admin/usuarios', u.id, 'editar']"
+                       class="rounded-lg border border-blue-900 text-blue-900 px-3 py-1 text-sm hover:bg-blue-50">
+                      Editar
+                    </a>
+                    <button (click)="onDelete(u.id)"
+                            class="rounded-lg bg-rose-600 text-white px-3 py-1 text-sm hover:bg-rose-500">
+                      Eliminar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <div class="px-6 py-8 text-center text-slate-400">No hay usuarios registrados.</div>
+      }
+    } @else {
+      <div class="px-6 py-8 text-center text-slate-500">Cargando usuarios...</div>
+    }
+  </div>
+</main>

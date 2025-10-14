@@ -1,0 +1,77 @@
+<main class="w-full py-6">
+  <h1 class="text-2xl text-blue-900 mb-1">
+    {{ isEdit ? 'Editar usuario' : 'Nuevo usuario' }}
+  </h1>
+  <p class="text-slate-600 mb-4">Completa la información básica del usuario.</p>
+
+  <div class="rounded-2xl border border-slate-200 shadow">
+    <div class="p-6">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6">
+
+        <div class="grid gap-4 md:grid-cols-2">
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-semibold" for="email">Correo electrónico</label>
+            <input id="email" type="email" formControlName="email" class="rounded-xl border border-slate-200 px-3 py-2" required />
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-semibold" for="password">Contraseña</label>
+            <input id="password" type="password" formControlName="password"
+                   class="rounded-xl border border-slate-200 px-3 py-2"
+                   [attr.placeholder]="isEdit ? 'Deja en blanco para mantener actual' : ''" />
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-semibold" for="rol">Rol</label>
+          <select id="rol" formControlName="rol" class="rounded-xl border border-slate-200 px-3 py-2">
+            <option value="ADMIN">Administrador</option>
+            <option value="CLIENTE">Cliente</option>
+            <option value="STAFF">Staff</option>
+            <option value="RECEPCIONISTA">Recepcionista</option>
+          </select>
+        </div>
+
+        <!-- Nombre/Teléfono SIEMPRE -->
+        <div class="grid gap-4 md:grid-cols-2">
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-semibold">Nombre completo</label>
+            <input formControlName="nombreCompleto" class="rounded-xl border border-slate-200 px-3 py-2" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-sm font-semibold">Teléfono</label>
+            <input formControlName="telefono" class="rounded-xl border border-slate-200 px-3 py-2" />
+          </div>
+        </div>
+
+        <!-- Extras de empleado -->
+        @if (showEmpleadoExtras()) {
+          <div class="grid gap-4 md:grid-cols-3">
+            <div class="flex flex-col gap-1">
+              <label class="text-sm font-semibold">Cargo</label>
+              <input formControlName="cargo" class="rounded-xl border border-slate-200 px-3 py-2" />
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-sm font-semibold">Salario (COP)</label>
+              <input type="number" formControlName="salario" class="rounded-xl border border-slate-200 px-3 py-2" />
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-sm font-semibold">Fecha de contratación</label>
+              <input type="date" formControlName="fechaContratacion" class="rounded-xl border border-slate-200 px-3 py-2" />
+            </div>
+          </div>
+        }
+
+        <div class="flex justify-end gap-3 pt-4 border-t border-slate-200">
+          <a [routerLink]="['/dashboard-admin/usuarios']" class="inline-flex items-center rounded-xl border border-slate-200 px-4 py-2 text-sm">
+            Cancelar
+          </a>
+          <button type="submit" [disabled]="saving"
+                  class="inline-flex items-center rounded-xl bg-amber-600 text-white font-semibold px-4 py-2 shadow hover:bg-amber-700 transition disabled:opacity-60">
+            {{ isEdit ? 'Guardar cambios' : 'Crear usuario' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>

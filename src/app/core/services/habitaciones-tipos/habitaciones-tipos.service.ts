@@ -1,88 +1,54 @@
-import { HabitacionTipoApiService } from './habitaciones-tipos-api.service';
-import { HabitacionTipo } from './../../../shared/models/habitacion-tipo.model';
-// src/app/features/habitaciones-tipos/data/habitaciones-tipos.service.ts
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HabitacionTipo } from '../../../shared/models/habitacion-tipo.model';
+import { Observable, map } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class HabitacionTipoService {
-  // Estado interno privado
-  private _tiposSubject = new BehaviorSubject<HabitacionTipo[]>([]);
-  // Observable que exponen los componentes
-  tipos$: Observable<HabitacionTipo[]> = this._tiposSubject.asObservable();
+  private readonly baseUrl = 'http://localhost:8083/api/habitaciones-tipos';
 
-  constructor(private api: HabitacionTipoApiService) {
-    // al iniciar servicio, cargar datos
-    this.loadAll();
+  private readonly httpOptions = {
+    withCredentials: true,
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+  };
+
+  constructor(private http: HttpClient) {}
+
+  /** 🔧 Normaliza respuesta: si backend manda string[] → lo convierte a {url: string}[] */
+  private normalize = (tipo: any): HabitacionTipo => ({
+    ...tipo,
+    imagenes: (tipo.imagenes || []).map((img: any) =>
+      typeof img === 'string' ? { url: img } : img
+    ),
+  });
+
+  listAll(): Observable<HabitacionTipo[]> {
+    return this.http
+      .get<HabitacionTipo[]>(this.baseUrl, this.httpOptions)
+      .pipe(map(arr => arr.map(this.normalize)));
   }
 
-  /** Método interno para cargar todos */
-  private loadAll(): void {
-    this.api.listAll()
-      .subscribe({
-        next: (tipos) => {
-          this._tiposSubject.next(tipos);
-        },
-        error: (err) => {
-          console.error('Error cargando tipos de habitación', err);
-          // opcional: manejar error o dejar estado vacío
-        }
-      });
+  listActivos(): Observable<HabitacionTipo[]> {
+    return this.http
+      .get<HabitacionTipo[]>(`${this.baseUrl}/activos`, this.httpOptions)
+      .pipe(map(arr => arr.map(this.normalize)));
   }
 
-  /** Obtenemos los valores actuales (sincrónico) */
-  getTiposSnapshot(): HabitacionTipo[] {
-    return this._tiposSubject.getValue();
+  getById(id: string): Observable<HabitacionTipo> {
+    return this.http
+      .get<HabitacionTipo>(`${this.baseUrl}/${id}`, this.httpOptions)
+      .pipe(map(this.normalize));
   }
 
-  /** Obtener por id desde el estado local */
-  getById(id: string): HabitacionTipo | undefined {
-    const arr = this._tiposSubject.getValue();
-    return arr.find(t => t.id === id);
+  create(tipo: Omit<HabitacionTipo, 'id'>): Observable<HabitacionTipo> {
+    return this.http.post<HabitacionTipo>(this.baseUrl, tipo, this.httpOptions);
   }
 
-  /** Refrescar lista desde backend */
-  reload(): void {
-    this.loadAll();
+  update(id: string, tipo: HabitacionTipo): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/${id}`, tipo, this.httpOptions);
   }
 
-  /** Crear nuevo tipo: luego de crear recargar lista */
-  create(data: Omit<HabitacionTipo, 'id'>): Observable<void> {
-    return this.api.create(data)
-      .pipe(
-        tap(() => {
-          this.loadAll();
-        })
-      );
-  }
-
-  /** Actualizar tipo: luego de actualizar recargar lista */
-  update(id: string, patch: Partial<HabitacionTipo>): Observable<void> {
-    const actual = this.getById(id);
-    if (!actual) {
-      // Si no existe localmente, simplemente recargar todo
-      return this.api.update({ id, ...patch } as HabitacionTipo).pipe(
-        tap(() => this.loadAll())
-      );
-    }
-    const actualizado: HabitacionTipo = { ...actual, ...patch, id };
-    return this.api.update(actualizado).pipe(
-      tap(() => {
-        this.loadAll();
-      })
-    );
-  }
-
-  /** Eliminar tipo: luego de eliminar recargar lista */
   delete(id: string): Observable<void> {
-    return this.api.delete(id)
-      .pipe(
-        tap(() => {
-          this.loadAll();
-        })
-      );
+    return this.http.delete<void>(`${this.baseUrl}/${id}`, this.httpOptions);
   }
 }

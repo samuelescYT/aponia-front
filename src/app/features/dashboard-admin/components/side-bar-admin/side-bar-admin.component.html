@@ -8,7 +8,9 @@
     <!-- INICIO -->
     <a
       routerLink="/dashboard-admin"
-      class="flex items-center justify-center gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
+      class="flex items-center gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
+      [class.justify-start]="sideBar.sidebarOpen()"
+      [class.justify-center]="!sideBar.sidebarOpen()"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none"
            viewBox="0 0 24 24" stroke="currentColor">
@@ -20,8 +22,11 @@
 
     <!-- TIPOS DE HABITACIONES -->
     <a
-      routerLink="habitaciones-tipos"
-      class="flex items-center justify-center gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
+      routerLink="/dashboard-admin/habitaciones-tipos"
+      routerLinkActive="bg-gray-100"
+      class="flex items-center gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
+      [class.justify-start]="sideBar.sidebarOpen()"
+      [class.justify-center]="!sideBar.sidebarOpen()"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none"
            viewBox="0 0 24 24" stroke="currentColor">
@@ -33,8 +38,11 @@
 
     <!-- HABITACIONES -->
     <a
-
-      class="flex items-center justify-center gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
+      routerLink="habitaciones"
+      routerLinkActive="bg-gray-50"
+      class="flex items-center gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
+      [class.justify-start]="sideBar.sidebarOpen()"
+      [class.justify-center]="!sideBar.sidebarOpen()"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none"
            viewBox="0 0 24 24" stroke="currentColor">
@@ -46,7 +54,11 @@
 
     <!-- SERVICIOS -->
     <a
-      class="flex items-center justify-center gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
+      class="flex items-center gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
+      routerLink="/dashboard-admin/servicios"
+      routerLinkActive="bg-gray-50"
+      [class.justify-start]="sideBar.sidebarOpen()"
+      [class.justify-center]="!sideBar.sidebarOpen()"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none"
            viewBox="0 0 24 24" stroke="currentColor">
@@ -58,7 +70,11 @@
 
     <!-- USUARIOS -->
     <a
-      class="flex items-center justify-center gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
+      class="flex items-center gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
+      routerLink="/dashboard-admin/usuarios"
+      routerLinkActive="bg-gray-50"
+      [class.justify-start]="sideBar.sidebarOpen()"
+      [class.justify-center]="!sideBar.sidebarOpen()"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none"
            viewBox="0 0 24 24" stroke="currentColor">
@@ -69,8 +85,11 @@
     </a>
 
     <!-- RESERVAS -->
-    <a
-      class="flex items-center justify-center  gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
+    <!-- <a
+      class="flex items-center  gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
+      routerLinkActive="bg-gray-50"
+      [class.justify-start]="sideBar.sidebarOpen()"
+      [class.justify-center]="!sideBar.sidebarOpen()"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none"
            viewBox="0 0 24 24" stroke="currentColor">
@@ -78,6 +97,6 @@
               d="M8 7V3h8v4m-9 4h10M5 21h14a2 2 0 002-2V7H3v12a2 2 0 002 2z" />
       </svg>
       <span [class.hidden]="!sideBar.sidebarOpen()">Reservas</span>
-    </a>
+    </a> -->
   </nav>
 </aside>

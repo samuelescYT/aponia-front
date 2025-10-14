@@ -1,6 +1,5 @@
-import { Imagen } from './imagen.model';
-import { Habitacion } from './habitacion.model';
-
+// habitacion-tipo.model.ts
+export interface Imagen { id?: string; url: string; }
 export interface HabitacionTipo {
   id: string;
   nombre: string;
@@ -8,7 +7,5 @@ export interface HabitacionTipo {
   aforoMaximo: number;
   precioPorNoche: number;
   activa: boolean;
-
-  habitaciones?: Habitacion[]; // LAZY en backend
-  imagenes?: Imagen[];         // LAZY en backend
+  imagenes?: Imagen[]; // ← siempre objetos
 }

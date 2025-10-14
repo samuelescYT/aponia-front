@@ -1,79 +1,78 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ServicioDisponibilidadService } from '../../../../core/servicios-disponibilidad/servicio-disponibilidad.service';
-import { ServicioDisponibilidadApiService } from '../../../../core/servicios-disponibilidad/servicio-disponibilidad-api.service';
-import { ServicioDisponibilidad } from '../../../../shared/models/servicio-disponibilidad.model';
+// import { ServicioDisponibilidadApiService } from './../../../../core/servicios-disponibilidad/servicio-disponibilidad-api.service';
+// import { Component, inject, OnInit } from '@angular/core';
+// import { CommonModule } from '@angular/common';
+// import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+// import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+// import { ServicioDisponibilidad } from '../../../../shared/models/servicio-disponibilidad.model';
 
-@Component({
-  selector: 'app-disponibilidad-form',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
-  templateUrl: './disponibilidad-form.component.html',
-})
-export class DisponibilidadFormComponent implements OnInit {
-  private fb = inject(FormBuilder);
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private service = inject(ServicioDisponibilidadService);
-  private api = inject(ServicioDisponibilidadApiService);
+// @Component({
+//   selector: 'app-disponibilidad-form',
+//   standalone: true,
+//   imports: [CommonModule, ReactiveFormsModule, RouterLink],
+//   templateUrl: './disponibilidad-form.component.html',
+// })
+// export class DisponibilidadFormComponent implements OnInit {
+//   private fb = inject(FormBuilder);
+//   private route = inject(ActivatedRoute);
+//   private router = inject(Router);
+//   private service = inject(ServicioDisponibilidadService);
+//   private api = inject(ServicioDisponibilidadApiService);
 
-  isEdit = false;
-  id: string | null = null;
-  loading = false;
-  saving = false;
+//   isEdit = false;
+//   id: string | null = null;
+//   loading = false;
+//   saving = false;
 
-  form = this.fb.nonNullable.group({
-    servicioId: ['', Validators.required],
-    fecha: ['', Validators.required],
-    horaInicio: ['', Validators.required],
-    horaFin: ['', Validators.required],
-    capacidadDisponible: [0, [Validators.required, Validators.min(1)]],
-  });
+//   form = this.fb.nonNullable.group({
+//     servicioId: ['', Validators.required],
+//     fecha: ['', Validators.required],
+//     horaInicio: ['', Validators.required],
+//     horaFin: ['', Validators.required],
+//     capacidadDisponible: [0, [Validators.required, Validators.min(1)]],
+//   });
 
-  ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    this.isEdit = !!id;
-    this.id = id;
+//   ngOnInit(): void {
+//     const id = this.route.snapshot.paramMap.get('id');
+//     this.isEdit = !!id;
+//     this.id = id;
 
-    if (this.isEdit && id) {
-      this.loading = true;
-      this.api.getById(id).subscribe({
-        next: (d) => this.form.patchValue(d),
-        error: () => this.router.navigate(['/disponibilidades']),
-        complete: () => (this.loading = false),
-      });
-    }
-  }
+//     if (this.isEdit && id) {
+//       this.loading = true;
+//       this.api.getById(id).subscribe({
+//         next: (d) => this.form.patchValue(d),
+//         error: () => this.router.navigate(['/disponibilidades']),
+//         complete: () => (this.loading = false),
+//       });
+//     }
+//   }
 
-  onSubmit(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
+//   onSubmit(): void {
+//     if (this.form.invalid) {
+//       this.form.markAllAsTouched();
+//       return;
+//     }
 
-    this.saving = true;
-    const data = this.form.getRawValue();
+//     this.saving = true;
+//     const data = this.form.getRawValue();
 
-    const done = () => {
-      this.saving = false;
-      this.router.navigate(['/disponibilidades']);
-    };
+//     const done = () => {
+//       this.saving = false;
+//       this.router.navigate(['/disponibilidades']);
+//     };
 
-    const fail = (err: unknown) => {
-      console.error('Error guardando disponibilidad', err);
-      this.saving = false;
-      alert('Error al guardar. Revisa la consola.');
-    };
+//     const fail = (err: unknown) => {
+//       console.error('Error guardando disponibilidad', err);
+//       this.saving = false;
+//       alert('Error al guardar. Revisa la consola.');
+//     };
 
-    if (this.isEdit && this.id) {
-  const dataWithId = { id: this.id, ...data } as ServicioDisponibilidad;
-  this.service.update(this.id, dataWithId).subscribe({ next: done, error: fail });
-} else {
-  const newData = { id: '', ...data } as ServicioDisponibilidad;
-  this.service.create(newData).subscribe({ next: done, error: fail });
-}
+//     if (this.isEdit && this.id) {
+//   const dataWithId = { id: this.id, ...data } as ServicioDisponibilidad;
+//   this.service.update(this.id, dataWithId).subscribe({ next: done, error: fail });
+// } else {
+//   const newData = { id: '', ...data } as ServicioDisponibilidad;
+//   this.service.create(newData).subscribe({ next: done, error: fail });
+// }
 
-  }
-}
+//   }
+// }

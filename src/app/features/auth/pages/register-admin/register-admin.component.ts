@@ -47,9 +47,7 @@ export class RegisterAdminComponent {
     const { nombreCompleto, email, telefono, password } = this.form.getRawValue();
     const ok = await this.auth.registerAdmin(nombreCompleto, email, telefono, password);
     if (ok) {
-      // this.router.navigateByUrl('/dashboard-admin');
-      console.log("Registro de administrador exitoso");
-      console.log(this.auth.user());
+      this.router.navigateByUrl('/dashboard-admin');
       return;
     }
     this.error.set('No se pudo registrar. Intenta de nuevo.');

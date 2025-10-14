@@ -1,29 +1,44 @@
 import { Injectable } from '@angular/core';
-import { HabitacionesApiService } from './habitaciones-api.service';
-import { Habitacion } from './../../../shared/models/habitacion.model';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Habitacion } from '../../../shared/models/habitacion.model';
 
 @Injectable({ providedIn: 'root' })
-export class HabitacionesService {
-  constructor(private api: HabitacionesApiService) {}
+export class HabitacionService {
+  private readonly baseUrl = 'http://localhost:8083/api/habitaciones';
 
-  listar(): Observable<Habitacion[]> {
-    return this.api.getAll();
+  private readonly httpOptions = {
+    withCredentials: true,
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+  };
+
+  constructor(private http: HttpClient) {}
+
+  listAll(): Observable<Habitacion[]> {
+    return this.http.get<Habitacion[]>(this.baseUrl, this.httpOptions);
   }
 
-  obtener(id: string): Observable<Habitacion> {
-    return this.api.getById(id);
+  listActivas(): Observable<Habitacion[]> {
+    return this.http.get<Habitacion[]>(`${this.baseUrl}/activos`, this.httpOptions);
   }
 
-  crear(habitacion: Habitacion, tipoId?: string): Observable<void> {
-    return this.api.create(habitacion, tipoId);
+  listByTipo(tipoId: string): Observable<Habitacion[]> {
+    return this.http.get<Habitacion[]>(`${this.baseUrl}/tipo/${tipoId}`, this.httpOptions);
   }
 
-  actualizar(habitacion: Habitacion, tipoId?: string): Observable<void> {
-    return this.api.update(habitacion, tipoId);
+  getById(id: string): Observable<Habitacion> {
+    return this.http.get<Habitacion>(`${this.baseUrl}/${id}`, this.httpOptions);
   }
 
-  eliminar(id: string): Observable<void> {
-    return this.api.delete(id);
+  create(habitacion: Omit<Habitacion, 'id'>): Observable<Habitacion> {
+    return this.http.post<Habitacion>(this.baseUrl, habitacion, this.httpOptions);
+  }
+
+  update(id: string, habitacion: Habitacion): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/${id}`, habitacion, this.httpOptions);
+  }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`, this.httpOptions);
   }
 }

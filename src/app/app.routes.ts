@@ -8,12 +8,12 @@ import { LoginPageComponent } from './features/auth/pages/login/login.component'
 import { RegisterPageComponent } from './features/auth/pages/register/register.component';
 import { ServiciosFormComponent } from './features/servicios/pages/servicios-form/servicios-form.component';
 import { ServiciosListComponent } from './features/servicios/pages/servicios-list/servicios-list.component';
-import { DisponibilidadListComponent } from './features/servicios-disponibilidad/pages/disponibilidad-list/disponibilidad-list.component';
-import { DisponibilidadFormComponent } from './features/servicios-disponibilidad/pages/disponibilidad-form/disponibilidad-form.component';
 import { DashboardComponent } from './features/dashboard/pages/dashboard/dashboard.component';
 import { RegisterAdminComponent } from './features/auth/pages/register-admin/register-admin.component';
 import { DashboardAdminComponent } from './features/dashboard-admin/pages/dashboard-admin/dashboard-admin.component';
 import { HomeAdminComponent } from './features/dashboard-admin/components/home-admin/home-admin.component';
+import { UsuariosListComponent } from './features/usuarios/pages/usuarios-list/usuarios-list.component';
+import { UsuariosFormComponent } from './features/usuarios/pages/usuarios-form/usuarios-form.component';
 
 
 export const routes: Routes = [
@@ -34,14 +34,17 @@ export const routes: Routes = [
       { path: 'habitaciones-tipos/nuevo', component: HabitacionTipoFormComponent },
       { path: 'habitaciones-tipos/:id/editar', component: HabitacionTipoFormComponent },
       { path: 'habitaciones', component: HabitacionesListComponent },
-      { path: 'habitaciones/nueva', component: HabitacionesFormComponent },
+      { path: 'habitaciones/nuevo', component: HabitacionesFormComponent },
       { path: 'habitaciones/:id/editar', component: HabitacionesFormComponent },
       { path: 'servicios', component: ServiciosListComponent },
       { path: 'servicios/nuevo', component: ServiciosFormComponent },
       { path: 'servicios/:id/editar', component: ServiciosFormComponent },
-      { path: 'disponibilidad', component: DisponibilidadListComponent },
-      { path: 'disponibilidad/nueva', component: DisponibilidadFormComponent},
-      { path: 'disponibilidad/:id/editar', component: DisponibilidadFormComponent},
+      { path: 'usuarios', component: UsuariosListComponent },
+      { path: 'usuarios/nuevo', component: UsuariosFormComponent },
+      { path: 'usuarios/:id/editar', component: UsuariosFormComponent },
+      // { path: 'disponibilidad', component: DisponibilidadListComponent },
+      // { path: 'disponibilidad/nueva', component: DisponibilidadFormComponent},
+      // { path: 'disponibilidad/:id/editar', component: DisponibilidadFormComponent},
     ]
   },
 

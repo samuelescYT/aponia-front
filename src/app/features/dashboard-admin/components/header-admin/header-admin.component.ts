@@ -2,7 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { leftSidebarService } from '../../../../core/admin/left-sideBar.service';
+import { leftSidebarService } from '../../../../core/services/left-sideBar.service';
 
 @Component({
   selector: 'app-header-admin',
