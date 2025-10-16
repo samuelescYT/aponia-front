@@ -1,11 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { HeaderClienteComponent } from '../../components/header-cliente.component/header-cliente.component';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
+import { FooterComponent } from '../../../landing/components/footer/footer';
 
 @Component({
   selector: 'app-dashboard.component',
-  imports: [HeaderClienteComponent],
+  imports: [HeaderClienteComponent, RouterOutlet, FooterComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })

@@ -14,6 +14,10 @@ import { DashboardAdminComponent } from './features/dashboard-admin/pages/dashbo
 import { HomeAdminComponent } from './features/dashboard-admin/components/home-admin/home-admin.component';
 import { UsuariosListComponent } from './features/usuarios/pages/usuarios-list/usuarios-list.component';
 import { UsuariosFormComponent } from './features/usuarios/pages/usuarios-form/usuarios-form.component';
+import { ReservasListComponent } from './features/dashboard/pages/reservas-list/reservas-list.component';
+import { ReservasFormComponent } from './features/dashboard/pages/reservas-form/reservas-form.component';
+import { ClienteHomeComponent } from './features/dashboard/pages/cliente-home/cliente-home.component';
+import { HabitacionesClienteListComponent } from './features/dashboard/pages/habitaciones-list/habitaciones-list.component';
 
 
 export const routes: Routes = [
@@ -23,7 +27,17 @@ export const routes: Routes = [
   { path: 'register-admin', component: RegisterAdminComponent, title: 'Registrar admin – Aponia' },
 
   //Dasbboard del cliente
-  { path: 'dashboard', component: DashboardComponent, title: 'Dashboard – Aponia'},
+  {
+    path: 'dashboard', component: DashboardComponent, title: 'Dashboard – Aponia',
+    children: [
+      {path: '', component: ClienteHomeComponent},
+      {path: 'reservas', component: ReservasListComponent},
+      {path: 'crear-reserva', component: ReservasFormComponent},
+      {path: 'habitaciones', component: HabitacionesClienteListComponent}
+    ]
+
+  },
+
   {
     path: 'dashboard-admin',
     component: DashboardAdminComponent,

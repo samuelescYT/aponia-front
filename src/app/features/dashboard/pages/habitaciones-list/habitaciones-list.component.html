@@ -1,0 +1,37 @@
+<section class="py-16 bg-slate-50">
+  <div class="max-w-6xl mx-auto px-6 text-center">
+    <h2 class="text-2xl font-semibold text-slate-800 mb-10">
+      🏨 Tipos de habitaciones
+    </h2>
+
+    @if (loading()) {
+      <p class="text-slate-500">Cargando tipos de habitación...</p>
+    } @else if (tipos().length === 0) {
+      <p class="text-slate-500">No hay habitaciones activas actualmente.</p>
+    } @else {
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        @for (t of tipos(); track t.id) {
+          <article
+            class="border border-slate-200 rounded-2xl overflow-hidden shadow-md bg-white hover:shadow-lg transition-all"
+          >
+            <img
+              [src]="t.imagenes?.[0]?.url || 'img/default_room.jpg'"
+              alt="{{ t.nombre }}"
+              class="h-48 w-full object-cover hover:scale-105 transition-transform duration-500"
+            />
+            <div class="p-5 text-left">
+              <h3 class="text-lg font-semibold text-aponia-primary mb-1">{{ t.nombre }}</h3>
+              <p class="text-sm text-slate-600 mb-2 line-clamp-3">
+                {{ t.descripcion || 'Sin descripción disponible.' }}
+              </p>
+              <p class="text-sm text-slate-500 mb-1">👥 Aforo: {{ t.aforoMaximo }}</p>
+              <p class="text-sm font-semibold text-slate-700">
+                💰 {{ t.precioPorNoche | currency:'COP':'symbol':'1.0-0' }} / noche
+              </p>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</section>

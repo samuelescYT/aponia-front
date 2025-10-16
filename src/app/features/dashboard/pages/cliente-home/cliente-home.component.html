@@ -1,0 +1,92 @@
+<section class="relative min-h-[80vh] grid place-items-center overflow-hidden bg-slate-50">
+  <img
+    src="img/lobby_hotel4.jpg"
+    alt="Lobby elegante"
+    class="absolute inset-0 h-full w-full object-cover brightness-90"
+  />
+  <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/30 to-black/70"></div>
+
+  <div class="relative z-10 mx-auto max-w-5xl px-6 text-center text-white">
+    <h1 class="text-4xl sm:text-5xl md:text-6xl font-display font-semibold leading-tight text-gray-200">
+      ¡Bienvenido {{auth.user()?.nombreCompleto }}!
+    </h1>
+    <p class="mt-4 text-lg text-white/90">
+      Nos alegra tenerte de nuevo en <span class="font-semibold">Aponia Hotel</span>.
+    </p>
+
+    <div class="mt-10 flex flex-wrap justify-center gap-4">
+      <a
+        routerLink="/dashboard/crear-reserva"
+        class="px-6 py-3 rounded-xl bg-aponia-primary text-white font-medium shadow hover:bg-aponia-primary/90 transition-all"
+      >
+        ✨ Nueva reserva
+      </a>
+      <a
+        routerLink="/dashboard/reservas"
+        class="px-6 py-3 rounded-xl bg-white/10 border border-white/30 text-white font-medium hover:bg-white/20 transition-all"
+      >
+        📋 Mis reservas
+      </a>
+      <a
+        routerLink="/dashboard/habitaciones"
+        class="px-6 py-3 rounded-xl bg-white/10 border border-white/30 text-white font-medium hover:bg-white/20 transition-all"
+      >
+        🏨 Ver habitaciones
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Sección de servicios dinámicos -->
+<section class="py-16 bg-white border-t border-slate-100">
+  <div class="max-w-6xl mx-auto px-6 text-center">
+    <h2 class="text-2xl font-semibold text-slate-800 mb-8">
+      🌿 Experiencias Aponia
+    </h2>
+
+    @if (loading()) {
+      <p class="text-slate-500">Cargando experiencias...</p>
+    } @else if (servicios().length === 0) {
+      <p class="text-slate-500">No hay servicios disponibles por ahora.</p>
+    } @else {
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        @for (s of servicios(); track s.id) {
+          <article
+            class="group border border-slate-200 rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 bg-white"
+          >
+            <div class="relative">
+              <img
+                [src]="s.imagenesUrls?.[0] || 'img/default_service.jpg'"
+                alt="{{ s.nombre }}"
+                class="h-48 w-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"
+              ></div>
+              <h3
+                class="absolute bottom-3 left-4 text-lg font-semibold text-white drop-shadow"
+              >
+                {{ s.nombre }}
+              </h3>
+            </div>
+
+            <div class="p-4 text-left">
+              <p class="text-slate-600 text-sm line-clamp-2 mb-3">
+                {{ s.descripcion || 'Sin descripción.' }}
+              </p>
+              <p class="text-sm text-slate-500">
+                📍 <span class="font-medium text-slate-700">{{ s.lugar }}</span>
+              </p>
+              <p class="text-sm text-slate-500">
+                ⏱️ {{ s.duracionMinutos }} min
+              </p>
+              <p class="text-sm font-semibold text-aponia-primary mt-1">
+                {{ s.precioPorPersona | currency:'COP':'symbol':'1.0-0' }} por persona
+              </p>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</section>

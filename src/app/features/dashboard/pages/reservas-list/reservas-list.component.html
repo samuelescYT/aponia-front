@@ -1,0 +1,80 @@
+<section class="p-6">
+  <h2 class="text-2xl font-semibold text-slate-800 mb-6">Mis Reservas</h2>
+
+  @if (loading()) {
+    <p class="text-slate-500">Cargando reservas...</p>
+  } @else if (reservas().length === 0) {
+    <p class="text-slate-500">Aún no tienes reservas registradas.</p>
+  } @else {
+    <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+      @for (r of reservas(); track r.id) {
+        @let e = r.estancias?.[0];
+
+        <article
+          class="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm hover:shadow-md transition-all"
+        >
+          <!-- Imagen de tipo de habitación -->
+          <img
+            [src]="e?.tipoHabitacion?.imagenes?.[0]?.url"
+            alt="Habitación {{ e?.tipoHabitacion?.nombre }}"
+            class="w-full h-48 object-cover"
+          />
+
+          <!-- Contenido -->
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-semibold text-aponia-primary text-sm">
+                {{ r.codigo }}
+              </h3>
+              <span
+                class="px-2 py-1 rounded text-xs font-semibold uppercase"
+                [class.bg-yellow-100]="r.estado === 'PENDIENTE'"
+                [class.text-yellow-800]="r.estado === 'PENDIENTE'"
+                [class.bg-green-100]="r.estado === 'CONFIRMADA'"
+                [class.text-green-800]="r.estado === 'CONFIRMADA'"
+                [class.bg-blue-100]="r.estado === 'COMPLETADA'"
+                [class.text-blue-800]="r.estado === 'COMPLETADA'"
+                [class.bg-red-100]="r.estado === 'CANCELADA'"
+                [class.text-red-800]="r.estado === 'CANCELADA'"
+              >
+                {{ r.estado }}
+              </span>
+            </div>
+
+            <!-- Tipo de habitación -->
+            <p class="text-sm text-slate-700 font-medium">
+              🏨 {{ e?.tipoHabitacion?.nombre || 'Tipo desconocido' }}
+            </p>
+
+            <!-- Fechas -->
+            <p class="text-xs text-slate-500 mt-1">
+              📅 {{ e?.entrada }} → {{ e?.salida }}
+            </p>
+
+            <!-- Precio -->
+            <p class="text-sm text-slate-700 mt-2">
+              💰 {{ e?.precioPorNoche | currency:'COP':'symbol':'1.0-0' }}/noche
+            </p>
+
+            <!-- Notas -->
+            <p class="text-xs text-slate-500 italic mt-3">
+              {{ r.notas || 'Sin notas adicionales.' }}
+            </p>
+
+            <!-- Acciones -->
+            <div class="mt-4 text-right">
+              @if (r.estado === 'PENDIENTE') {
+                <button
+                  (click)="cancelar(r.id)"
+                  class="px-3 py-1.5 bg-red-50 text-red-700 text-xs font-medium rounded-lg hover:bg-red-100 transition-all"
+                >
+                  Cancelar
+                </button>
+              }
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>
