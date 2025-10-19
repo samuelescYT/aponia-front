@@ -80,7 +80,7 @@ export const routes: Routes = [
   // { path: 'disponibilidades/:id/editar', component: DisponibilidadFormComponent, title: 'Editar disponibilidad – Aponia' },
   
   {
-  path: 'dashboard-receptionista',
+  path: 'dashboard-recepcionista',
   component: DashboardRecepcionista,
   title: 'Dashboard recepcionista – Aponia',
   children: [

@@ -32,20 +32,29 @@ export class LoginPageComponent {
   async onSubmit(): Promise<void> {
     const { email, password } = this.form.getRawValue();
     const ok = await this.auth.login(email, password);
+    
     if (ok) {
-      if(this.auth.role() === 'CLIENTE') {
-        this.router.navigateByUrl('/dashboard');
-      }
-
-      if(this.auth.role() === 'ADMIN') {
-       this.router.navigateByUrl('/dashboard-admin');
-      }
-
-      if(this.auth.role() === 'RECEPCIONISTA') {
-        console.log("redirigir a panel de recepcionista");
+      const role = this.auth.role();
+      
+      // Redirigir según el rol del usuario
+      switch (role) {
+        case 'CLIENTE':
+          this.router.navigateByUrl('/dashboard');
+          break;
+        case 'ADMIN':
+          this.router.navigateByUrl('/dashboard-admin');
+          break;
+        case 'RECEPCIONISTA':
+          this.router.navigateByUrl('/dashboard-recepcionista');
+          break;
+        default:
+          // Si el rol no es reconocido, mostrar error
+          this.error.set('Rol de usuario no reconocido');
+          await this.auth.logout();
       }
       return;
     }
+    
     this.error.set('Credenciales inválidas');
   }
 }
