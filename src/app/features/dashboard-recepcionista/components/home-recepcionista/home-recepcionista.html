@@ -1,0 +1,56 @@
+<div class="flex flex-col items-center justify-center h-[calc(100vh-8rem)] text-center select-none">
+  <!-- ICONO PRINCIPAL -->
+  <div class="mb-6 flex items-center justify-center rounded-full bg-aponia-primary/10 p-6">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="w-12 h-12 text-aponia-primary"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.8"
+        d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+      />
+    </svg>
+  </div>
+  <!-- TITULO -->
+  <h1 class="text-3xl font-semibold text-aponia-primary mb-2">
+    ¡Bienvenido, {{ auth.user()?.nombreCompleto ?? 'Recepcionista' }}!
+  </h1>
+  <p class="text-slate-600 max-w-md">
+    Desde aquí puedes gestionar la contratación de servicios del hotel para los clientes.
+  </p>
+  <!-- BOTÓN DE ACCESO RÁPIDO -->
+  <div class="mt-10">
+    <a
+      class="flex flex-col items-center justify-center p-8 bg-white rounded-2xl shadow-lg hover:shadow-xl transition cursor-pointer border border-slate-200 hover:border-aponia-primary min-w-[280px]"
+      routerLink="/receptionist/contratar-servicio"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="w-10 h-10 text-aponia-primary mb-4"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      <span class="font-semibold text-lg">Contratar Servicio</span>
+      <span class="text-sm text-slate-500 mt-1">Asignar servicios a clientes</span>
+    </a>
+  </div>
+  <!-- INFORMACIÓN ADICIONAL -->
+  <div class="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg max-w-md">
+    <p class="text-sm text-blue-800">
+      💡 <strong>Tip:</strong> Puedes contratar servicios como spa, restaurante, tours, o cualquier
+      servicio adicional disponible en el hotel.
+    </p>
+  </div>
+  <!-- FOOTER -->
+  <p class="text-xs text-slate-400 mt-8">
+    Panel de recepción del sistema Aponia Hotel - Todos los derechos reservados
+  </p>
+</div>

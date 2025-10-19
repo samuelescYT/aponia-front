@@ -18,6 +18,9 @@ import { ReservasListComponent } from './features/dashboard/pages/reservas-list/
 import { ReservasFormComponent } from './features/dashboard/pages/reservas-form/reservas-form.component';
 import { ClienteHomeComponent } from './features/dashboard/pages/cliente-home/cliente-home.component';
 import { HabitacionesClienteListComponent } from './features/dashboard/pages/habitaciones-list/habitaciones-list.component';
+import { HomeRecepcionista } from './features/dashboard-recepcionista/components/home-recepcionista/home-recepcionista';
+import { ContratarService } from './features/dashboard-recepcionista/components/contratar-service/contratar-service';
+import { DashboardRecepcionista } from './features/dashboard-recepcionista/dashboard-recepcionista';
 
 
 export const routes: Routes = [
@@ -75,5 +78,20 @@ export const routes: Routes = [
   // { path: 'disponibilidades', component: DisponibilidadListComponent, title: 'Disponibilidades – Aponia' },
   // { path: 'disponibilidades/nueva', component: DisponibilidadFormComponent, title: 'Nueva disponibilidad – Aponia' },
   // { path: 'disponibilidades/:id/editar', component: DisponibilidadFormComponent, title: 'Editar disponibilidad – Aponia' },
-
+  
+  {
+  path: 'dashboard-receptionista',
+  component: DashboardRecepcionista,
+  title: 'Dashboard recepcionista – Aponia',
+  children: [
+    {
+      path: '',
+      component: HomeRecepcionista
+    },
+    {
+      path: 'contratar-servicio',
+      component: ContratarService
+    }
+  ]
+}
 ];
