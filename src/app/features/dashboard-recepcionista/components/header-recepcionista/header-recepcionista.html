@@ -1,11 +1,13 @@
-<header class="flex items-center justify-between h-16 px-6 lg:px-6 w-full shadow-b shadow-sm">
+<header class="flex items-center justify-between h-16 px-6 lg:px-6 w-fullshadow-b shadow-sm">
   <div class="flex cursor-pointer" (click)="this.sideBar.toggle()">
     <a class="flex items-center gap-2">
       <img src="img/logo_aponia.png" width="40" height="40" alt="Logo Aponia" class="rounded-lg" />
       <span class="font-display text-xl tracking-wide text-aponia-primary">Aponia</span>
     </a>
   </div>
-  <p class="text-slate-700">Panel de recepcionista</p>
+
+  <p class="text-slate-700">Panel de empleado</p>
+
   <!-- Usuario -->
   <div class="relative">
     <button
@@ -15,6 +17,7 @@
     >
       {{ initial() }}
     </button>
+
     <!-- Menú desplegable -->
     <div
       *ngIf="menuOpen()"

@@ -1,17 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderRecepcionista } from './components/header-recepcionista/header-recepcionista';
-import { SideBarRecepcionista } from './components/side-bar-recepcionista/side-bar-recepcionista';
+import { SideBarRecepcionista } from './components/side-bar-recepcionista/side-bar-recepcionista'; 
+import { leftSidebarService } from '../../core/services/left-sideBar.service';
 
 @Component({
   selector: 'app-dashboard-receptionista',
   imports: [
     RouterOutlet,
     HeaderRecepcionista,
-    SideBarRecepcionista
+    SideBarRecepcionista 
   ],
   templateUrl: './dashboard-recepcionista.html',
   styleUrl: './dashboard-recepcionista.scss'
 })
 export class DashboardRecepcionista {
+  sideBar = inject(leftSidebarService); 
 }

@@ -1,15 +1,13 @@
 <aside
   class="h-screen fixed top-0 left-0 pt-16 bg-aponia-white text-slate-700 flex flex-col transition-all duration-300 select-none shadow-right shadow-sm"
-  [class.w-60]="sideBar.sidebarOpen()"
+  [class.w-64]="sideBar.sidebarOpen()"
   [class.w-20]="!sideBar.sidebarOpen()"
 >
   <!-- NAV LINKS -->
   <nav class="flex-1 flex flex-col gap-1 mt-4">
     <!-- INICIO -->
     <a
-      routerLink="/dashboard-receptionist"
-      routerLinkActive="bg-gray-100"
-      [routerLinkActiveOptions]="{ exact: true }"
+      routerLink="/dashboard-recepcionista"
       class="flex items-center gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
       [class.justify-start]="sideBar.sidebarOpen()"
       [class.justify-center]="!sideBar.sidebarOpen()"
@@ -33,7 +31,7 @@
 
     <!-- CONTRATAR SERVICIO -->
     <a
-      routerLink="/dashboard-receptionist/contratar-servicio"
+      routerLink="/dashboard-recepcionista/contratar-servicio"
       routerLinkActive="bg-gray-100"
       class="flex items-center gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
       [class.justify-start]="sideBar.sidebarOpen()"
@@ -53,7 +51,7 @@
 
     <!-- VER SERVICIOS CONTRATADOS (Opcional) -->
     <a
-      routerLink="/dashboard-receptionist/servicios-contratados"
+      routerLink="/dashboard-recepcionista/servicios-contratados"
       routerLinkActive="bg-gray-100"
       class="flex items-center gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
       [class.justify-start]="sideBar.sidebarOpen()"
@@ -78,7 +76,7 @@
 
     <!-- BUSCAR CLIENTE (Opcional) -->
     <a
-      routerLink="/dashboard-receptionist/buscar-cliente"
+      routerLink="/dashboard-recepcionista/buscar-cliente"
       routerLinkActive="bg-gray-100"
       class="flex items-center gap-3 px-4 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
       [class.justify-start]="sideBar.sidebarOpen()"

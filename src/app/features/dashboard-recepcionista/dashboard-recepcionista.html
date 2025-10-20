@@ -1,15 +1,13 @@
-<div class="flex h-screen bg-slate-50">
-  <!-- Sidebar -->
-  <app-side-bar-receptionist></app-side-bar-receptionist>
+<app-header-receptionist></app-header-receptionist>
 
-  <!-- Contenido principal -->
-  <div class="flex-1 flex flex-col ml-20">
-    <!-- Header -->
-    <app-header-receptionist></app-header-receptionist>
+<!-- SIDEBAR -->
+<app-side-bar-receptionist></app-side-bar-receptionist>
 
-    <!-- Área de contenido dinámico -->
-    <main class="flex-1 overflow-y-auto p-6">
-      <router-outlet></router-outlet>
-    </main>
-  </div>
-</div>
+<!-- CONTENIDO PRINCIPAL -->
+<main
+  class="pt-16 transition-all duration-300"
+  [class.pl-60]="sideBar.sidebarOpen()"
+  [class.pl-20]="!sideBar.sidebarOpen()"
+>
+  <router-outlet></router-outlet>
+</main>
