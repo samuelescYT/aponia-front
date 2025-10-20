@@ -1,80 +1,201 @@
 <section class="p-6">
   <h2 class="text-2xl font-semibold text-slate-800 mb-6">Mis Reservas</h2>
 
+  <!-- Tabs de filtros -->
+  <div class="mb-6 border-b border-slate-200">
+    <nav class="flex gap-2 -mb-px" aria-label="Filtros de reservas">
+      <!-- TODAS -->
+      <button
+        (click)="cambiarFiltro('TODAS')"
+        [class.border-aponia-primary]="filtroActual() === 'TODAS'"
+        [class.text-aponia-primary]="filtroActual() === 'TODAS'"
+        [class.border-transparent]="filtroActual() !== 'TODAS'"
+        [class.text-slate-500]="filtroActual() !== 'TODAS'"
+        class="px-4 py-2 border-b-2 font-medium text-sm hover:text-aponia-primary transition-colors"
+      >
+        Todas
+        <span class="ml-2 px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs">
+          {{ totalReservas() }}
+        </span>
+      </button>
+
+      <!-- ACTIVAS -->
+      <button
+        (click)="cambiarFiltro('ACTIVAS')"
+        [class.border-aponia-primary]="filtroActual() === 'ACTIVAS'"
+        [class.text-aponia-primary]="filtroActual() === 'ACTIVAS'"
+        [class.border-transparent]="filtroActual() !== 'ACTIVAS'"
+        [class.text-slate-500]="filtroActual() !== 'ACTIVAS'"
+        class="px-4 py-2 border-b-2 font-medium text-sm hover:text-aponia-primary transition-colors"
+      >
+        Activas
+        <span class="ml-2 px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs">
+          {{ reservasActivas() }}
+        </span>
+      </button>
+
+      <!-- COMPLETADAS -->
+      <button
+        (click)="cambiarFiltro('COMPLETADAS')"
+        [class.border-aponia-primary]="filtroActual() === 'COMPLETADAS'"
+        [class.text-aponia-primary]="filtroActual() === 'COMPLETADAS'"
+        [class.border-transparent]="filtroActual() !== 'COMPLETADAS'"
+        [class.text-slate-500]="filtroActual() !== 'COMPLETADAS'"
+        class="px-4 py-2 border-b-2 font-medium text-sm hover:text-aponia-primary transition-colors"
+      >
+        Completadas
+        <span class="ml-2 px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-xs">
+          {{ reservasCompletadas() }}
+        </span>
+      </button>
+
+      <!-- CANCELADAS -->
+      <button
+        (click)="cambiarFiltro('CANCELADAS')"
+        [class.border-aponia-primary]="filtroActual() === 'CANCELADAS'"
+        [class.text-aponia-primary]="filtroActual() === 'CANCELADAS'"
+        [class.border-transparent]="filtroActual() !== 'CANCELADAS'"
+        [class.text-slate-500]="filtroActual() !== 'CANCELADAS'"
+        class="px-4 py-2 border-b-2 font-medium text-sm hover:text-aponia-primary transition-colors"
+      >
+        Canceladas
+        <span class="ml-2 px-2 py-0.5 rounded-full bg-red-100 text-red-700 text-xs">
+          {{ reservasCanceladas() }}
+        </span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Contenido -->
   @if (loading()) {
-    <p class="text-slate-500">Cargando reservas...</p>
-  } @else if (reservas().length === 0) {
-    <p class="text-slate-500">Aún no tienes reservas registradas.</p>
+  <div class="flex items-center justify-center py-12">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-aponia-primary"></div>
+  </div>
+  } @else if (reservasFiltradas().length === 0) {
+  <div class="text-center py-12">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="mx-auto h-16 w-16 text-slate-300 mb-4"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+      />
+    </svg>
+    <p class="text-slate-500 text-lg mb-2">
+      @if (filtroActual() === 'TODAS') { Aún no tienes reservas registradas. } @else if
+      (filtroActual() === 'ACTIVAS') { No tienes reservas activas. } @else if (filtroActual() ===
+      'COMPLETADAS') { No tienes reservas completadas. } @else { No tienes reservas canceladas. }
+    </p>
+    @if (filtroActual() !== 'TODAS') {
+    <button
+      (click)="cambiarFiltro('TODAS')"
+      class="text-aponia-primary hover:underline text-sm mt-2"
+    >
+      Ver todas las reservas
+    </button>
+    }
+  </div>
   } @else {
-    <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-      @for (r of reservas(); track r.id) {
-        @let e = r.estancias?.[0];
-
-        <article
-          class="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm hover:shadow-md transition-all"
+  <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+    @for (r of reservasFiltradas(); track r.id) { @let e = r.estancias?.[0]; @let noches =
+    calcularNoches(r); @let total = calcularTotal(r);
+    <article
+      class="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm hover:shadow-md transition-all"
+    >
+      <!-- Imagen de tipo de habitación -->
+      <div class="relative">
+        <img
+          [src]="e?.tipoHabitacion?.imagenes?.[0]?.url || 'assets/img/no-image.png'"
+          alt="Habitación {{ e?.tipoHabitacion?.nombre }}"
+          class="w-full h-48 object-cover"
+        />
+        <!-- Badge de estado sobre la imagen -->
+        <span
+          class="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold uppercase shadow-lg"
+          [class.bg-yellow-100]="r.estado === 'PENDIENTE'"
+          [class.text-yellow-800]="r.estado === 'PENDIENTE'"
+          [class.bg-green-100]="r.estado === 'CONFIRMADA'"
+          [class.text-green-800]="r.estado === 'CONFIRMADA'"
+          [class.bg-blue-100]="r.estado === 'COMPLETADA'"
+          [class.text-blue-800]="r.estado === 'COMPLETADA'"
+          [class.bg-red-100]="r.estado === 'CANCELADA'"
+          [class.text-red-800]="r.estado === 'CANCELADA'"
         >
-          <!-- Imagen de tipo de habitación -->
-          <img
-            [src]="e?.tipoHabitacion?.imagenes?.[0]?.url"
-            alt="Habitación {{ e?.tipoHabitacion?.nombre }}"
-            class="w-full h-48 object-cover"
-          />
+          {{ r.estado }}
+        </span>
+      </div>
 
-          <!-- Contenido -->
-          <div class="p-4">
-            <div class="flex items-center justify-between mb-2">
-              <h3 class="font-semibold text-aponia-primary text-sm">
-                {{ r.codigo }}
-              </h3>
-              <span
-                class="px-2 py-1 rounded text-xs font-semibold uppercase"
-                [class.bg-yellow-100]="r.estado === 'PENDIENTE'"
-                [class.text-yellow-800]="r.estado === 'PENDIENTE'"
-                [class.bg-green-100]="r.estado === 'CONFIRMADA'"
-                [class.text-green-800]="r.estado === 'CONFIRMADA'"
-                [class.bg-blue-100]="r.estado === 'COMPLETADA'"
-                [class.text-blue-800]="r.estado === 'COMPLETADA'"
-                [class.bg-red-100]="r.estado === 'CANCELADA'"
-                [class.text-red-800]="r.estado === 'CANCELADA'"
-              >
-                {{ r.estado }}
-              </span>
-            </div>
+      <!-- Contenido -->
+      <div class="p-5">
+        <!-- Código de reserva -->
+        <div class="mb-3">
+          <p class="text-xs text-slate-500 uppercase tracking-wide">Código de Reserva</p>
+          <h3 class="font-semibold text-aponia-primary">{{ r.codigo }}</h3>
+        </div>
 
-            <!-- Tipo de habitación -->
-            <p class="text-sm text-slate-700 font-medium">
-              🏨 {{ e?.tipoHabitacion?.nombre || 'Tipo desconocido' }}
-            </p>
+        <!-- Tipo de habitación -->
+        <p class="text-base text-slate-800 font-semibold mb-2">
+          🏨 {{ e?.tipoHabitacion?.nombre || 'Tipo desconocido' }}
+        </p>
 
-            <!-- Fechas -->
-            <p class="text-xs text-slate-500 mt-1">
-              📅 {{ e?.entrada }} → {{ e?.salida }}
-            </p>
+        <!-- Fechas y noches -->
+        <div class="bg-slate-50 rounded-lg p-3 mb-3">
+          <p class="text-sm text-slate-700 flex items-center gap-2">
+            <span>📅</span>
+            <span class="font-medium">{{ e?.entrada }}</span>
+            <span class="text-slate-400">→</span>
+            <span class="font-medium">{{ e?.salida }}</span>
+          </p>
+          <p class="text-xs text-slate-500 mt-1">
+            🌙 {{ noches }} {{ noches === 1 ? 'noche' : 'noches' }}
+          </p>
+        </div>
 
-            <!-- Precio -->
-            <p class="text-sm text-slate-700 mt-2">
-              💰 {{ e?.precioPorNoche | currency:'COP':'symbol':'1.0-0' }}/noche
-            </p>
+        <!-- Precios -->
+        <div class="space-y-1 mb-3">
+          <p class="text-sm text-slate-600">
+            💵 {{ e?.precioPorNoche | currency : 'COP' : 'symbol' : '1.0-0' }} / noche
+          </p>
+          <p class="text-base text-slate-800 font-bold">
+            💰 Total: {{ total | currency : 'COP' : 'symbol' : '1.0-0' }}
+          </p>
+        </div>
 
-            <!-- Notas -->
-            <p class="text-xs text-slate-500 italic mt-3">
-              {{ r.notas || 'Sin notas adicionales.' }}
-            </p>
+        <!-- Notas -->
+        @if (r.notas) {
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-3 mb-3">
+          <p class="text-xs text-blue-800">📝 {{ r.notas }}</p>
+        </div>
+        }
 
-            <!-- Acciones -->
-            <div class="mt-4 text-right">
-              @if (r.estado === 'PENDIENTE') {
-                <button
-                  (click)="cancelar(r.id)"
-                  class="px-3 py-1.5 bg-red-50 text-red-700 text-xs font-medium rounded-lg hover:bg-red-100 transition-all"
-                >
-                  Cancelar
-                </button>
-              }
-            </div>
+        <!-- Acciones -->
+        <div class="pt-3 border-t border-slate-100">
+          @if (r.estado === 'PENDIENTE' || r.estado === 'CONFIRMADA') {
+          <button
+            (click)="cancelar(r.id)"
+            class="w-full px-4 py-2 bg-red-50 text-red-700 text-sm font-medium rounded-lg hover:bg-red-100 transition-all"
+          >
+            ❌ Cancelar Reserva
+          </button>
+          } @else if (r.estado === 'COMPLETADA') {
+          <div class="text-center py-2">
+            <span class="text-sm text-green-600 font-medium">✅ Reserva completada</span>
           </div>
-        </article>
-      }
-    </div>
+          } @else if (r.estado === 'CANCELADA') {
+          <div class="text-center py-2">
+            <span class="text-sm text-red-600 font-medium">🚫 Reserva cancelada</span>
+          </div>
+          }
+        </div>
+      </div>
+    </article>
+    }
+  </div>
   }
 </section>
