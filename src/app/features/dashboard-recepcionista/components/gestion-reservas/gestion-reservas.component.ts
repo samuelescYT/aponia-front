@@ -95,4 +95,35 @@ export class GestionReservasComponent implements OnInit {
       },
     });
   }
+
+  getEstadoBadgeClass(estado: string | undefined | null): string {
+  const estadoValido = estado || 'DESCONOCIDO';
+  
+  const classes: { [key: string]: string } = {
+    'CONFIRMADA': 'bg-green-100 text-green-800',
+    'PENDIENTE': 'bg-yellow-100 text-yellow-800',
+    'CANCELADA': 'bg-red-100 text-red-800',
+    'COMPLETADA': 'bg-blue-100 text-blue-800',
+    'CHECKED_IN': 'bg-purple-100 text-purple-800',
+    'CHECKED_OUT': 'bg-gray-100 text-gray-800',
+    'DESCONOCIDO': 'bg-gray-100 text-gray-500'
+  };
+  
+  return classes[estadoValido] || classes['DESCONOCIDO'];
 }
+
+getEstadoIcon(estado: string | undefined | null): string {
+  const estadoValido = estado || 'DESCONOCIDO';
+  
+  const icons: { [key: string]: string } = {
+    'CONFIRMADA': '✅',
+    'PENDIENTE': '⏳',
+    'CANCELADA': '❌',
+    'COMPLETADA': '🏁',
+    'CHECKED_IN': '🏨',
+    'CHECKED_OUT': '🚪',
+    'DESCONOCIDO': '❓'
+  };
+  
+  return icons[estadoValido] || icons['DESCONOCIDO'];
+}}

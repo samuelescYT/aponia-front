@@ -1,103 +1,264 @@
 <div class="p-6 bg-white rounded-2xl shadow">
-  <h2 class="text-2xl font-semibold text-[#0a3d62] mb-4">Gestión de Reservas</h2>
+  <!-- Header -->
+  <div class="mb-6">
+    <h2 class="text-2xl font-semibold text-[#0a3d62] mb-2">Gestión de Reservas</h2>
+    <p class="text-gray-600">Administra y supervisa todas las reservas del hotel</p>
+  </div>
 
-  <!-- Filtros -->
-  <div class="flex justify-between items-center mb-4">
-    <div>
+  <!-- Filtros y Controles -->
+  <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+    <div class="flex flex-wrap gap-2">
       <button
         (click)="filtro.set('todas')"
-        [class.bg-blue-600]="filtro() === 'todas'"
-        class="px-4 py-2 rounded-md text-white bg-gray-500 hover:bg-blue-600 mr-2"
+        [class]="
+          filtro() === 'todas'
+            ? 'bg-[#0a3d62] text-white shadow-md'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+        "
+        class="px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2"
       >
+        <span>📋</span>
         Todas
       </button>
       <button
         (click)="filtro.set('activas')"
-        [class.bg-blue-600]="filtro() === 'activas'"
-        class="px-4 py-2 rounded-md text-white bg-gray-500 hover:bg-blue-600"
+        [class]="
+          filtro() === 'activas'
+            ? 'bg-[#0a3d62] text-white shadow-md'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+        "
+        class="px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2"
       >
+        <span>✅</span>
         Activas
       </button>
     </div>
+
     <button
       (click)="cargarReservas()"
-      class="px-4 py-2 bg-[#0a3d62] text-white rounded-md hover:bg-[#0b4a7d]"
+      class="px-4 py-2 bg-[#0a3d62] text-white rounded-lg hover:bg-[#0b4a7d] transition-colors duration-200 flex items-center gap-2 font-medium"
     >
-      🔄 Recargar
+      <span class="text-lg">🔄</span>
+      Recargar
     </button>
   </div>
 
-  <!-- Mensajes -->
-  <p *ngIf="mensaje()" class="text-green-600 mb-2">{{ mensaje() }}</p>
-  <p *ngIf="error()" class="text-red-600 mb-2">{{ error() }}</p>
+  <!-- Mensajes de Estado -->
+  <div class="mb-4">
+    <div
+      *ngIf="mensaje()"
+      class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg flex items-center gap-2 mb-2"
+    >
+      <span class="text-lg">✅</span>
+      {{ mensaje() }}
+    </div>
+    <div
+      *ngIf="error()"
+      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2"
+    >
+      <span class="text-lg">❌</span>
+      {{ error() }}
+    </div>
+  </div>
 
-  <!-- Tabla de reservas -->
+  <!-- Tabla de Reservas -->
   <div *ngIf="!cargando(); else cargandoTpl">
-    <table class="min-w-full border border-gray-300 text-sm text-left">
-      <thead class="bg-gray-100">
-        <tr>
-          <th class="px-4 py-2 border">Código</th>
-          <th class="px-4 py-2 border">Cliente</th>
-          <th class="px-4 py-2 border">Entrada</th>
-          <th class="px-4 py-2 border">Salida</th>
-          <th class="px-4 py-2 border">Estado</th>
-          <th class="px-4 py-2 border">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let r of reservasFiltradas()" class="hover:bg-gray-50">
-          <td class="px-4 py-2 border">{{ r.codigo }}</td>
-          <td class="px-4 py-2 border">{{ r.cliente?.nombreCompleto || 'Sin cliente' }}</td>
-          <td class="px-4 py-2 border">
-            {{ r.entrada ? (r.entrada | date : 'yyyy-MM-dd HH:mm') : '—' }}
-          </td>
-          <td class="px-4 py-2 border">
-            {{ r.salida ? (r.salida | date : 'yyyy-MM-dd HH:mm') : '—' }}
-          </td>
-          <td class="px-4 py-2 border">{{ r.estado }}</td>
-          <td class="px-4 py-2 border">
-            <button (click)="verDetalle(r)" class="text-blue-600 hover:underline mr-3">Ver</button>
-            <button
-              *ngIf="r.estado === 'CONFIRMADA'"
-              (click)="cancelarReserva(r.id)"
-              class="text-red-600 hover:underline"
+    <div class="overflow-x-auto border border-gray-200 rounded-lg">
+      <table class="min-w-full">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 uppercase border-b">
+              <div class="flex items-center gap-2">
+                <span>🔖</span>
+                Código
+              </div>
+            </th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 uppercase border-b">
+              <div class="flex items-center gap-2">
+                <span>👤</span>
+                Cliente
+              </div>
+            </th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 uppercase border-b">
+              <div class="flex items-center gap-2">
+                <span>📅</span>
+                Entrada
+              </div>
+            </th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 uppercase border-b">
+              <div class="flex items-center gap-2">
+                <span>🚪</span>
+                Salida
+              </div>
+            </th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 uppercase border-b">
+              <div class="flex items-center gap-2">
+                <span>📊</span>
+                Estado
+              </div>
+            </th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 uppercase border-b">
+              <div class="flex items-center gap-2">
+                <span>⚡</span>
+                Acciones
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <tr
+            *ngFor="let r of reservasFiltradas()"
+            class="hover:bg-blue-50 transition-colors duration-150"
+          >
+            <td class="px-4 py-3 whitespace-nowrap">
+              <div class="font-semibold text-[#0a3d62]">{{ r.codigo }}</div>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <div class="font-medium text-gray-900">
+                {{ r.cliente?.nombreCompleto || 'Sin cliente' }}
+              </div>
+              <div class="text-sm text-gray-500">{{ r.cliente?.email || '—' }}</div>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <div class="text-sm text-gray-900">
+                {{ r.entrada ? (r.entrada | date : 'yyyy-MM-dd HH:mm') : '—' }}
+              </div>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <div class="text-sm text-gray-900">
+                {{ r.salida ? (r.salida | date : 'yyyy-MM-dd HH:mm') : '—' }}
+              </div>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <span
+                [class]="getEstadoBadgeClass(r.estado)"
+                class="px-3 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1"
+              >
+                <span class="text-xs">{{ getEstadoIcon(r.estado) }}</span>
+                {{ r.estado }}
+              </span>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <div class="flex items-center gap-2">
+                <button
+                  (click)="verDetalle(r)"
+                  class="text-blue-600 hover:text-blue-800 hover:underline transition-colors duration-200 flex items-center gap-1 text-sm font-medium"
+                >
+                  <span>👁️</span>
+                  Ver
+                </button>
+                <button
+                  *ngIf="r.estado === 'CONFIRMADA'"
+                  (click)="cancelarReserva(r.id)"
+                  class="text-red-600 hover:text-red-800 hover:underline transition-colors duration-200 flex items-center gap-1 text-sm font-medium ml-3"
+                >
+                  <span>❌</span>
+                  Cancelar
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div
+      *ngIf="reservasFiltradas().length === 0"
+      class="text-center py-8 border border-gray-200 rounded-lg bg-gray-50"
+    >
+      <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
+        <span class="text-2xl">📭</span>
+      </div>
+      <h3 class="text-lg font-semibold text-gray-900 mb-1">No hay reservas</h3>
+      <p class="text-gray-500 text-sm">No se encontraron reservas con los filtros actuales.</p>
+    </div>
+  </div>
+
+  <!-- Panel de Detalles -->
+  <div *ngIf="reservaSeleccionada()" class="mt-6 p-6 border rounded-lg bg-gray-50">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-semibold text-[#0a3d62] flex items-center gap-2">
+        <span>📋</span>
+        Detalles de la Reserva
+      </h3>
+      <button
+        (click)="reservaSeleccionada.set(null)"
+        class="w-6 h-6 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center transition-colors duration-200 text-sm"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Código de Reserva</label>
+          <p class="font-semibold text-[#0a3d62]">{{ reservaSeleccionada()?.codigo }}</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+          <p>
+            <span
+              [class]="getEstadoBadgeClass(reservaSeleccionada()?.estado)"
+              class="px-2 py-1 rounded-full text-xs font-medium"
             >
-              Cancelar
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+              {{ reservaSeleccionada()?.estado }}
+            </span>
+          </p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Cliente</label>
+          <p class="font-medium text-gray-900">
+            {{ reservaSeleccionada()?.cliente?.nombreCompleto }}
+          </p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
+          <p class="font-medium text-gray-900">{{ reservaSeleccionada()?.cliente?.email }}</p>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Entrada</label>
+          <p class="font-medium text-gray-900">
+            {{
+              reservaSeleccionada()?.entrada
+                ? (reservaSeleccionada()?.entrada | date : 'yyyy-MM-dd HH:mm')
+                : '—'
+            }}
+          </p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Salida</label>
+          <p class="font-medium text-gray-900">
+            {{
+              reservaSeleccionada()?.salida
+                ? (reservaSeleccionada()?.salida | date : 'yyyy-MM-dd HH:mm')
+                : '—'
+            }}
+          </p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Notas</label>
+          <p class="text-gray-700 bg-white rounded p-3 border border-gray-300 min-h-[60px]">
+            {{ reservaSeleccionada()?.notas || 'No hay notas adicionales.' }}
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Detalle -->
-  <div *ngIf="reservaSeleccionada()" class="mt-6 p-4 border rounded-lg bg-gray-50">
-    <h3 class="text-lg font-semibold mb-2">Detalles de la Reserva</h3>
-    <p><strong>Código:</strong> {{ reservaSeleccionada()?.codigo }}</p>
-    <p><strong>Cliente:</strong> {{ reservaSeleccionada()?.cliente?.nombreCompleto }}</p>
-    <p><strong>Correo:</strong> {{ reservaSeleccionada()?.cliente?.email }}</p>
-    <p>
-      <strong>Fecha entrada:</strong>
-      {{
-        reservaSeleccionada()?.entrada
-          ? (reservaSeleccionada()?.entrada | date : 'yyyy-MM-dd HH:mm')
-          : '—'
-      }}
-    </p>
-    <p>
-      <strong>Fecha salida:</strong>
-      {{
-        reservaSeleccionada()?.salida
-          ? (reservaSeleccionada()?.salida | date : 'yyyy-MM-dd HH:mm')
-          : '—'
-      }}
-    </p>
-    <p><strong>Estado:</strong> {{ reservaSeleccionada()?.estado }}</p>
-    <p><strong>Notas:</strong> {{ reservaSeleccionada()?.notas }}</p>
-  </div>
-
-  <!-- Cargando -->
+  <!-- Loading State -->
   <ng-template #cargandoTpl>
-    <p class="text-gray-500">Cargando reservas...</p>
+    <div class="text-center py-8 border border-gray-200 rounded-lg bg-gray-50">
+      <div
+        class="w-12 h-12 bg-[#0a3d62] rounded-full flex items-center justify-center mx-auto mb-3 animate-pulse"
+      >
+        <span class="text-xl text-white">⏳</span>
+      </div>
+      <p class="text-gray-600 font-medium">Cargando reservas...</p>
+    </div>
   </ng-template>
 </div>
