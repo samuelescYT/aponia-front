@@ -1,6 +1,7 @@
 <div class="p-6 bg-white rounded-2xl shadow">
   <h2 class="text-2xl font-semibold text-[#0a3d62] mb-4">Gestión de Reservas</h2>
 
+  <!-- Filtros -->
   <div class="flex justify-between items-center mb-4">
     <div>
       <button
@@ -47,13 +48,17 @@
         <tr *ngFor="let r of reservasFiltradas()" class="hover:bg-gray-50">
           <td class="px-4 py-2 border">{{ r.codigo }}</td>
           <td class="px-4 py-2 border">{{ r.cliente?.nombreCompleto || 'Sin cliente' }}</td>
-          <td class="px-4 py-2 border">{{ r.estancias?.[0]?.entrada || '—' }}</td>
-          <td class="px-4 py-2 border">{{ r.estancias?.[0]?.salida || '—' }}</td>
+          <td class="px-4 py-2 border">
+            {{ r.entrada ? (r.entrada | date : 'yyyy-MM-dd HH:mm') : '—' }}
+          </td>
+          <td class="px-4 py-2 border">
+            {{ r.salida ? (r.salida | date : 'yyyy-MM-dd HH:mm') : '—' }}
+          </td>
           <td class="px-4 py-2 border">{{ r.estado }}</td>
           <td class="px-4 py-2 border">
             <button (click)="verDetalle(r)" class="text-blue-600 hover:underline mr-3">Ver</button>
             <button
-              *ngIf="r.estado === 'ACTIVA'"
+              *ngIf="r.estado === 'CONFIRMADA'"
               (click)="cancelarReserva(r.id)"
               class="text-red-600 hover:underline"
             >
@@ -71,17 +76,27 @@
     <p><strong>Código:</strong> {{ reservaSeleccionada()?.codigo }}</p>
     <p><strong>Cliente:</strong> {{ reservaSeleccionada()?.cliente?.nombreCompleto }}</p>
     <p><strong>Correo:</strong> {{ reservaSeleccionada()?.cliente?.email }}</p>
-    <p><strong>Entrada:</strong> {{ reservaSeleccionada()?.estancias?.[0]?.entrada || '—' }}</p>
-    <p><strong>Salida:</strong> {{ reservaSeleccionada()?.estancias?.[0]?.salida || '—' }}</p>
+    <p>
+      <strong>Fecha entrada:</strong>
+      {{
+        reservaSeleccionada()?.entrada
+          ? (reservaSeleccionada()?.entrada | date : 'yyyy-MM-dd HH:mm')
+          : '—'
+      }}
+    </p>
+    <p>
+      <strong>Fecha salida:</strong>
+      {{
+        reservaSeleccionada()?.salida
+          ? (reservaSeleccionada()?.salida | date : 'yyyy-MM-dd HH:mm')
+          : '—'
+      }}
+    </p>
     <p><strong>Estado:</strong> {{ reservaSeleccionada()?.estado }}</p>
-    <p>
-      <strong>Total pagado:</strong> ${{ reservaSeleccionada()?.resumenPago?.totalPagado || 0 }}
-    </p>
-    <p>
-      <strong>Pendiente:</strong> ${{ reservaSeleccionada()?.resumenPago?.saldoPendiente || 0 }}
-    </p>
+    <p><strong>Notas:</strong> {{ reservaSeleccionada()?.notas }}</p>
   </div>
 
+  <!-- Cargando -->
   <ng-template #cargandoTpl>
     <p class="text-gray-500">Cargando reservas...</p>
   </ng-template>
