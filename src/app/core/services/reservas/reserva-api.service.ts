@@ -45,4 +45,11 @@ export class ReservasApiService {
   return this.http.get<Reserva[]>(`${this.baseUrl}/all`, { withCredentials: true });
 }
 
+actualizarReserva(clienteId: string, reservaId: string, data: ReservaHabitacionRequest) {
+  return this.http.put<ReservaHabitacionResponse>(
+    `${this.baseUrl}/cliente/${clienteId}/reserva/${reservaId}`,
+    data,
+    { withCredentials: true }
+  );
+}
 }

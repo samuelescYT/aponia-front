@@ -3,6 +3,8 @@ import { AuthService } from './../../../../core/auth/auth.service';
 import { ReservasApiService } from './../../../../core/services/reservas/reserva-api.service';
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
+import { Router } from '@angular/router';
+
 
 type FiltroEstado = 'TODAS' | 'ACTIVAS' | 'COMPLETADAS' | 'CANCELADAS';
 
@@ -15,6 +17,7 @@ type FiltroEstado = 'TODAS' | 'ACTIVAS' | 'COMPLETADAS' | 'CANCELADAS';
 export class ReservasListComponent implements OnInit {
   private readonly reservasApi = inject(ReservasApiService);
   private readonly auth = inject(AuthService);
+  private router = inject(Router);
 
   // Señales de estado
   reservas = signal<Reserva[]>([]);
@@ -121,4 +124,8 @@ export class ReservasListComponent implements OnInit {
     const noches = this.calcularNoches(reserva);
     return estancia.precioPorNoche * noches;
   }
+
+  editarReserva(id: string) {
+  this.router.navigate(['/dashboard/reservas/editar', id]);
+}
 }

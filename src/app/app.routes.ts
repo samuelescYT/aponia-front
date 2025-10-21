@@ -23,6 +23,7 @@ import { ContratarService } from './features/dashboard-recepcionista/components/
 import { DashboardRecepcionista } from './features/dashboard-recepcionista/dashboard-recepcionista';
 import { PerfilComponent } from './features/dashboard/components/perfil/perfil';
 import { GestionReservasComponent  } from './features/dashboard-recepcionista/components/gestion-reservas/gestion-reservas.component';
+import { EditarReservaComponent } from './features/dashboard/pages/editar-reserva/editar-reserva.component';
 
 
 
@@ -32,17 +33,20 @@ export const routes: Routes = [
   { path: 'register', component: RegisterPageComponent, title: 'Crear cuenta – Aponia' },
   { path: 'register-admin', component: RegisterAdminComponent, title: 'Registrar admin – Aponia' },
 
-  //Dasbboard del cliente
+  // Dashboard del cliente - CORREGIDO
   {
-    path: 'dashboard', component: DashboardComponent, title: 'Dashboard – Aponia',
+    path: 'dashboard', 
+    component: DashboardComponent, 
+    title: 'Dashboard – Aponia',
     children: [
-      {path: '', component: ClienteHomeComponent},
-      {path: 'reservas', component: ReservasListComponent},
-      {path: 'crear-reserva', component: ReservasFormComponent},
-      {path: 'habitaciones', component: HabitacionesClienteListComponent},
+      { path: '', component: ClienteHomeComponent },
+      { path: 'reservas', component: ReservasListComponent },
+      { path: 'reservas/editar/:id', component: EditarReservaComponent }, // ← MOVIDA AQUÍ
+      { path: 'crear-reserva', component: ReservasFormComponent },
+      { path: 'habitaciones', component: HabitacionesClienteListComponent },
       { path: 'perfil', component: PerfilComponent }
+      // ← QUITA el dashboard anidado que está aquí
     ]
-
   },
 
   {

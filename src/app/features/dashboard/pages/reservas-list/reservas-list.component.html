@@ -174,14 +174,23 @@
 
         <!-- Acciones -->
         <div class="pt-3 border-t border-slate-100">
-          @if ( r.estado === 'CONFIRMADA') {
-          <button
-            (click)="cancelar(r.id)"
-            class="w-full px-4 py-2 bg-red-50 text-red-700 text-sm font-medium rounded-lg hover:bg-red-100 transition-all"
-          >
-            ❌ Cancelar Reserva
-          </button>
+          @if (r.estado === 'CONFIRMADA') {
+          <div class="flex gap-2">
+            <button
+              (click)="editarReserva(r.id)"
+              class="flex-1 px-4 py-2 bg-blue-50 text-blue-700 text-sm font-medium rounded-lg hover:bg-blue-100 transition-all"
+            >
+              ✏️ Editar
+            </button>
+            <button
+              (click)="cancelar(r.id)"
+              class="flex-1 px-4 py-2 bg-red-50 text-red-700 text-sm font-medium rounded-lg hover:bg-red-100 transition-all"
+            >
+              ❌ Cancelar
+            </button>
+          </div>
           } @else if (r.estado === 'COMPLETADA') {
+          <!-- resto igual -->
           <div class="text-center py-2">
             <span class="text-sm text-green-600 font-medium">✅ Reserva completada</span>
           </div>
