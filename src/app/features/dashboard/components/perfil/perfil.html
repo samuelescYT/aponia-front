@@ -1,0 +1,161 @@
+<section class="p-6 max-w-4xl mx-auto">
+  <h2 class="text-2xl font-semibold text-slate-800 mb-6">Mi Perfil</h2>
+
+  @if (loading()) {
+  <div class="flex items-center justify-center py-12">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-aponia-primary"></div>
+  </div>
+  } @else {
+  <div class="grid gap-6 md:grid-cols-3">
+    <!-- Tarjeta de información -->
+    <div class="md:col-span-1">
+      <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
+        <!-- Avatar -->
+        <div class="flex flex-col items-center mb-6">
+          <div
+            class="w-24 h-24 rounded-full bg-aponia-primary text-white flex items-center justify-center text-3xl font-bold mb-3"
+          >
+            {{ usuario()?.nombreCompleto?.charAt(0)?.toUpperCase() || '?' }}
+          </div>
+          <h3 class="text-lg font-semibold text-slate-800 text-center">
+            {{ usuario()?.nombreCompleto || 'Usuario' }}
+          </h3>
+          <p class="text-sm text-slate-500">{{ usuario()?.rol || 'CLIENTE' }}</p>
+        </div>
+
+        <!-- Información básica -->
+        <div class="space-y-3 pt-4 border-t border-slate-200">
+          <div>
+            <p class="text-xs text-slate-500 uppercase tracking-wide mb-1">Email</p>
+            <p class="text-sm text-slate-700 font-medium">{{ usuario()?.email }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 uppercase tracking-wide mb-1">Miembro desde</p>
+            <p class="text-sm text-slate-700">
+              {{
+                usuario()?.fechaRegistro ? (usuario()?.fechaRegistro | date : 'dd/MM/yyyy') : 'N/A'
+              }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario de edición -->
+    <div class="md:col-span-2">
+      <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-semibold text-slate-800">Información Personal</h3>
+          @if (!modoEdicion()) {
+          <button
+            (click)="activarEdicion()"
+            class="px-4 py-2 bg-aponia-primary text-white rounded-lg hover:bg-aponia-primary/90 transition text-sm font-medium"
+          >
+            ✏️ Editar
+          </button>
+          }
+        </div>
+
+        <form [formGroup]="perfilForm" (ngSubmit)="guardarCambios()">
+          <!-- Nombre completo -->
+          <div class="mb-4">
+            <label for="nombreCompleto" class="block text-sm font-semibold text-slate-700 mb-2">
+              Nombre Completo *
+            </label>
+            @if (modoEdicion()) {
+            <input
+              id="nombreCompleto"
+              type="text"
+              formControlName="nombreCompleto"
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-aponia-primary focus:ring-2 focus:ring-aponia-primary/20 transition"
+              [class.border-red-300]="nombreInvalido"
+              placeholder="Ej: Juan Pérez García"
+            />
+            @if (nombreInvalido) {
+            <p class="text-red-500 text-xs mt-1">El nombre debe tener al menos 3 caracteres</p>
+            } } @else {
+            <p class="text-slate-800 font-medium py-2">
+              {{ usuario()?.nombreCompleto || 'No especificado' }}
+            </p>
+            }
+          </div>
+
+          <!-- Teléfono -->
+          <div class="mb-6">
+            <label for="telefono" class="block text-sm font-semibold text-slate-700 mb-2">
+              Teléfono *
+            </label>
+            @if (modoEdicion()) {
+            <input
+              id="telefono"
+              type="tel"
+              formControlName="telefono"
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-aponia-primary focus:ring-2 focus:ring-aponia-primary/20 transition"
+              [class.border-red-300]="telefonoInvalido"
+              placeholder="Ej: +57 300 123 4567"
+            />
+            @if (telefonoInvalido) {
+            <p class="text-red-500 text-xs mt-1">Ingrese un número de teléfono válido</p>
+            } } @else {
+            <p class="text-slate-800 font-medium py-2">
+              {{ usuario()?.telefono || 'No especificado' }}
+            </p>
+            }
+          </div>
+
+          <!-- Email (solo lectura) -->
+          <div class="mb-6">
+            <label class="block text-sm font-semibold text-slate-700 mb-2">
+              Correo Electrónico
+            </label>
+            <div class="px-4 py-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              <p class="text-slate-600 text-sm">{{ usuario()?.email }}</p>
+              <p class="text-xs text-slate-400 mt-1">El correo no puede ser modificado</p>
+            </div>
+          </div>
+
+          <!-- Botones de acción -->
+          @if (modoEdicion()) {
+          <div class="flex gap-3 pt-4 border-t border-slate-200">
+            <button
+              type="button"
+              (click)="cancelarEdicion()"
+              [disabled]="guardando()"
+              class="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition font-medium disabled:opacity-50"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              [disabled]="perfilForm.invalid || guardando()"
+              class="flex-1 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              @if (guardando()) {
+              <span>Guardando...</span>
+              } @else {
+              <span>✓ Guardar Cambios</span>
+              }
+            </button>
+          </div>
+          }
+        </form>
+      </div>
+
+      <!-- Sección de cambio de contraseña (opcional) -->
+      <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-6 mt-6">
+        <h3 class="text-lg font-semibold text-slate-800 mb-3">Seguridad</h3>
+        <p class="text-sm text-slate-600 mb-4">
+          ¿Deseas cambiar tu contraseña? Contacta con el administrador del sistema.
+        </p>
+        <button
+          type="button"
+          class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition text-sm font-medium"
+          disabled
+        >
+          🔒 Cambiar Contraseña (Próximamente)
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+</section>

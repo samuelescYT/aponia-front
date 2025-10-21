@@ -21,6 +21,8 @@ import { HabitacionesClienteListComponent } from './features/dashboard/pages/hab
 import { HomeRecepcionista } from './features/dashboard-recepcionista/components/home-recepcionista/home-recepcionista';
 import { ContratarService } from './features/dashboard-recepcionista/components/contratar-service/contratar-service';
 import { DashboardRecepcionista } from './features/dashboard-recepcionista/dashboard-recepcionista';
+import { PerfilComponent } from './features/dashboard/components/perfil/perfil';
+
 
 
 export const routes: Routes = [
@@ -36,7 +38,8 @@ export const routes: Routes = [
       {path: '', component: ClienteHomeComponent},
       {path: 'reservas', component: ReservasListComponent},
       {path: 'crear-reserva', component: ReservasFormComponent},
-      {path: 'habitaciones', component: HabitacionesClienteListComponent}
+      {path: 'habitaciones', component: HabitacionesClienteListComponent},
+      { path: 'perfil', component: PerfilComponent }
     ]
 
   },
