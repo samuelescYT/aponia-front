@@ -3,7 +3,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { of, Observable } from 'rxjs'; 
 import { map, switchMap, catchError, tap } from 'rxjs/operators'; 
 
-// Interfaces (se mantienen igual)
 export interface ReservaServicio {
   id?: string;
   reserva: {
@@ -13,10 +12,11 @@ export interface ReservaServicio {
     id: string;
   };
   fecha: string;
-  cantidadPersonas?: number;
+  horaInicio: string;
+  numeroPersonas: number; // ← CAMBIAR de cantidadPersonas
+  precioPorPersona: number; // ← NUEVO campo requerido
+  totalServicio: number; // ← CAMBIAR de subtotal
   observaciones?: string;
-  subtotal?: number;
-  estado?: 'CONFIRMADA' | 'COMPLETADA' | 'CANCELADA';
 }
 
 export interface HabitacionConCliente {
@@ -57,49 +57,46 @@ export class ReservaServicioService {
    * Usando endpoints que SÍ existen
    */
   // En contrato-servicio.service.ts - REEMPLAZA el método completo
-buscarHabitacionConCliente(numeroHabitacion: string): Observable<HabitacionConCliente> {
-  let habitacionId = numeroHabitacion;
-  if (/^\d+$/.test(numeroHabitacion)) {
-    habitacionId = 'hab_' + numeroHabitacion;
+  buscarHabitacionConCliente(numeroHabitacion: string): Observable<HabitacionConCliente> {
+    let habitacionId = numeroHabitacion;
+    if (/^\d+$/.test(numeroHabitacion)) {
+      habitacionId = 'hab_' + numeroHabitacion;
+    }
+    
+    console.log('🔍 Buscando habitación con ID:', habitacionId);
+    
+    return this.http.get<any>(`${this.habitacionUrl}/${habitacionId}`).pipe(
+      switchMap(habitacionResponse => {
+        console.log('🏨 Habitación encontrada:', habitacionResponse);
+        
+        return this.buscarEstanciaActivaReal(habitacionId).pipe(
+          map(clienteData => {
+            console.log('🎯 Datos de cliente REALES:', clienteData);
+            
+            // ✅ CORREGIR el mapeo del tipo de habitación
+            const habitacionConCliente: HabitacionConCliente = {
+              id: habitacionResponse.id,
+              numeroHabitacion: habitacionResponse.numero,
+              activa: habitacionResponse.activa,
+              tipoHabitacion: {
+                id: habitacionResponse.tipo?.id || habitacionResponse.tipoId, // ← Probar ambas opciones
+                nombre: habitacionResponse.tipo?.nombre || habitacionResponse.tipoNombre, // ← Probar ambas
+                descripcion: habitacionResponse.tipo?.descripcion || ''
+              },
+              reservaActual: this.mapearEstanciaAReserva(clienteData)
+            };
+            
+            console.log('🎯 Habitación mapeada:', habitacionConCliente);
+            return habitacionConCliente;
+          })
+        );
+      }),
+      catchError((error: any) => {
+        console.error('❌ Error buscando habitación:', error);
+        throw new Error('Habitación no encontrada');
+      })
+    );
   }
-  
-  console.log('🔍 Buscando habitación con ID:', habitacionId);
-  
-  // PRIMERO obtener la habitación básica
-  return this.http.get<any>(`${this.habitacionUrl}/${habitacionId}`).pipe(
-    switchMap(habitacionResponse => {
-      console.log('🏨 Habitación base encontrada:', habitacionResponse);
-      
-      // LUEGO buscar la estancia activa REAL (sin datos simulados)
-      return this.buscarEstanciaActivaReal(habitacionId).pipe(
-        map(clienteData => {
-          console.log('🎯 Datos de cliente REALES:', clienteData);
-          
-          // ✅ SOLO usar datos REALES del backend
-          const habitacionConCliente: HabitacionConCliente = {
-            id: habitacionResponse.id,
-            numeroHabitacion: habitacionResponse.numero,
-            activa: habitacionResponse.activa,
-            tipoHabitacion: {
-              id: habitacionResponse.tipo?.id,
-              nombre: habitacionResponse.tipo?.nombre,
-              descripcion: habitacionResponse.tipo?.descripcion
-            },
-            reservaActual: this.mapearEstanciaAReserva(clienteData) // ← Solo datos reales
-          };
-          
-          console.log('🎯 Habitación con datos REALES:', habitacionConCliente);
-          return habitacionConCliente;
-        })
-      );
-    }),
-    catchError((error: any) => {
-      console.error('❌ Error buscando habitación:', error);
-      throw new Error('Habitación no encontrada');
-    })
-  );
-}
-
 // En contrato-servicio.service.ts
 private buscarEstanciaActivaReal(habitacionId: string): Observable<any> {
   let habitacionIdFormateado = habitacionId;
@@ -146,12 +143,7 @@ private mapearRespuestaHabitacion(response: any): HabitacionConCliente {
 }
 
   
-  
-
-  
-
-  // Los demás métodos se mantienen igual...
-  listarTodas(): Observable<ReservaServicio[]> {
+    listarTodas(): Observable<ReservaServicio[]> {
     return this.http.get<ReservaServicio[]>(`${this.apiUrl}/all`);
   }
 
@@ -194,4 +186,12 @@ private mapearRespuestaHabitacion(response: any): HabitacionConCliente {
   eliminar(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);
   }
+
+// En contrato-servicio.service.ts
+private obtenerReservaCompleta(reservaId: string): Observable<any> {
+  return this.http.get<any>(`http://localhost:8083/api/reservas/${reservaId}`).pipe(
+    catchError(() => of(null))
+  );
+}
+
 } 
