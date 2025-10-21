@@ -1,31 +1,39 @@
 <header class="flex items-center justify-between h-16 px-6 lg:px-6 w-fullshadow-b shadow-sm">
-
   <div class="flex cursor-pointer" (click)="this.sideBar.toggle()">
     <a class="flex items-center gap-2">
-      <img src="img/logo_aponia.png" width="40" height="40" alt="Logo Aponia" class="rounded-lg"/>
+      <img src="img/logo_aponia.png" width="40" height="40" alt="Logo Aponia" class="rounded-lg" />
       <span class="font-display text-xl tracking-wide text-aponia-primary">Aponia</span>
     </a>
   </div>
-
 
   <p class="text-slate-700">Panel de administrador</p>
 
   <!-- Usuario -->
   <div class="relative">
-    <button (click)="toggleMenu()"
+    <button
+      (click)="toggleMenu()"
       class="h-10 w-10 rounded-full bg-aponia-secondary text-white font-semibold flex items-center justify-center hover:opacity-90 focus:outline-none"
-      [attr.aria-expanded]="menuOpen()">
+      [attr.aria-expanded]="menuOpen()"
+    >
       {{ initial() }}
     </button>
 
     <!-- Menú desplegable -->
-    <div *ngIf="menuOpen()"
+    <div
+      *ngIf="menuOpen()"
       class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden"
-      (mouseleave)="toggleMenu()">
-      <a routerLink="/perfil" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition"
-        (click)="toggleMenu()">Editar perfil</a>
-      <button (click)="logout()"
-        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition">
+      (mouseleave)="toggleMenu()"
+    >
+      <a
+        routerLink="/perfil"
+        class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition"
+        (click)="toggleMenu()"
+        >Editar perfil</a
+      >
+      <button
+        (click)="logout()"
+        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition"
+      >
         Cerrar sesión
       </button>
     </div>

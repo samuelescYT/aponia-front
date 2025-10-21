@@ -51,23 +51,35 @@ export class ReservasListComponent implements OnInit {
   );
 
   ngOnInit() {
-    const user = this.auth.user();
-    if (!user) return;
+  const user = this.auth.user();
+  if (!user) return;
 
-    this.reservasApi.getReservasByCliente(user.id).subscribe({
-      next: (data) => {
-        // Ordenar por fecha de creación más reciente primero
-        const ordenadas = data.sort((a, b) => {
-          const fechaA = a.estancias?.[0]?.entrada || '';
-          const fechaB = b.estancias?.[0]?.entrada || '';
-          return fechaB.localeCompare(fechaA);
-        });
-        this.reservas.set(ordenadas);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false),
-    });
-  }
+  this.reservasApi.getReservasByCliente(user.id).subscribe({
+    next: (data) => {
+      console.log('📦 Datos recibidos del backend:', data);
+      
+      // Verificar la estructura de la primera reserva
+      if (data.length > 0) {
+        console.log('🔍 Estructura de la primera reserva:', data[0]);
+        console.log('🏨 Estancias:', data[0].estancias);
+        console.log('📅 Entrada:', data[0].estancias?.[0]?.entrada);
+      }
+      
+      // Ordenar por fecha de creación más reciente primero
+      const ordenadas = data.sort((a, b) => {
+        const fechaA = a.estancias?.[0]?.entrada || '';
+        const fechaB = b.estancias?.[0]?.entrada || '';
+        return fechaB.localeCompare(fechaA);
+      });
+      this.reservas.set(ordenadas);
+      this.loading.set(false);
+    },
+    error: (error) => {
+      console.error('❌ Error al cargar reservas:', error);
+      this.loading.set(false);
+    },
+  });
+}
 
   // Cambiar filtro activo
   cambiarFiltro(filtro: FiltroEstado) {

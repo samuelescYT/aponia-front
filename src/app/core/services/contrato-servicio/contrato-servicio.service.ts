@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { of, Observable } from 'rxjs'; 
+import { map, switchMap, catchError } from 'rxjs/operators'; 
 
 // Interfaces basadas en tu backend
 export interface ReservaServicio {
@@ -29,7 +30,7 @@ export interface ReservaServicioRequest {
 export interface HabitacionConCliente {
   id: string;
   numeroHabitacion: string;
-  estado: string;
+  activa: boolean; // ← Cambiar de estado a activa
   tipoHabitacion: {
     id: string;
     nombre: string;
@@ -62,11 +63,53 @@ export class ReservaServicioService {
    * Nota: Deberás crear este endpoint en tu backend o usar uno existente
    */
   buscarHabitacionConCliente(numeroHabitacion: string): Observable<HabitacionConCliente> {
-    return this.http.get<HabitacionConCliente>(
-      `${this.habitacionUrl}/numero/${numeroHabitacion}`
-    );
+  let habitacionId = numeroHabitacion;
+  if (/^\d+$/.test(numeroHabitacion)) {
+    habitacionId = 'hab_' + numeroHabitacion;
   }
+  
+  // Primero obtener la habitación
+  return this.http.get<any>(`${this.habitacionUrl}/${habitacionId}`).pipe(
+    switchMap(habitacionResponse => {
+      console.log('🏨 Habitación encontrada:', habitacionResponse);
+      
+      // Luego buscar la reserva activa para esta habitación
+      return this.buscarReservaActiva(habitacionId).pipe(
+        map(reservaActiva => {
+          return {
+            ...this.mapearRespuestaHabitacion(habitacionResponse),
+            reservaActual: reservaActiva
+          };
+        })
+      );
+    }),
+    catchError((error: any) => {
+      console.error('❌ Error buscando habitación:', error);
+      throw new Error('Habitación no encontrada');
+    })
+  );
+}
 
+private buscarReservaActiva(habitacionId: string): Observable<any> {
+  // Necesitarías crear este endpoint en el backend
+  return this.http.get<any>(`${this.habitacionUrl}/${habitacionId}/reserva-activa`).pipe(
+    catchError(() => of(undefined)) // Si no hay reserva, devolver undefined
+  );
+}
+
+private mapearRespuestaHabitacion(response: any): HabitacionConCliente {
+  return {
+    id: response.id,
+    numeroHabitacion: response.numero || response.numeroHabitacion,
+    activa: response.estado,
+    tipoHabitacion: {
+      id: response.tipo?.id || response.tipoHabitacion?.id,
+      nombre: response.tipo?.nombre || response.tipoHabitacion?.nombre,
+      descripcion: response.tipo?.descripcion || response.tipoHabitacion?.descripcion
+    },
+    reservaActual: undefined // Usar undefined en lugar de null
+  };
+}
   /**
    * Listar todas las reservas de servicios
    */

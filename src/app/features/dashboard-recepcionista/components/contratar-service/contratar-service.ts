@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ReservaServicioService, HabitacionConCliente, ReservaServicio } from '../../../../core/services/contrato-servicio/contrato-servicio.service';
+import { tap, catchError } from 'rxjs/operators';
 
 interface Servicio {
   id: string;
@@ -40,7 +41,7 @@ export class ContratarService implements OnInit {
   constructor() {
     // Formulario para buscar habitación
     this.busquedaForm = this.fb.group({
-      numeroHabitacion: ['', [Validators.required, Validators.pattern('^[0-9]+$')]]
+      numeroHabitacion: ['', [Validators.required]]
     });
     
     // Formulario para contratar servicio
@@ -58,27 +59,35 @@ export class ContratarService implements OnInit {
   
   // Buscar habitación y cliente usando el servicio real
   buscarHabitacion() {
-    if (this.busquedaForm.invalid) return;
-    
-    this.buscandoHabitacion.set(true);
-    this.errorBusqueda.set(null);
-    const numeroHabitacion = this.busquedaForm.value.numeroHabitacion;
-    
-    this.reservaServicioService.buscarHabitacionConCliente(numeroHabitacion).subscribe({
-      next: (habitacion) => {
-        this.habitacionEncontrada.set(habitacion);
-        this.buscandoHabitacion.set(false);
-      },
-      error: (error: any) => {
-        console.error('Error al buscar habitación:', error);
-        this.errorBusqueda.set(
-          'No se encontró la habitación o no tiene un cliente asignado'
-        );
-        this.habitacionEncontrada.set(null);
-        this.buscandoHabitacion.set(false);
-      }
-    });
-  }
+  if (this.busquedaForm.invalid) return;
+  
+  this.buscandoHabitacion.set(true);
+  this.errorBusqueda.set(null);
+  const numeroHabitacion = this.busquedaForm.value.numeroHabitacion;
+  
+  console.log('🔍 Buscando habitación con:', numeroHabitacion);
+  console.log('📤 URL completa:', `http://localhost:8083/api/habitaciones/numero/${numeroHabitacion}`);
+  
+  this.reservaServicioService.buscarHabitacionConCliente(numeroHabitacion).subscribe({
+    next: (habitacion) => {
+      console.log('✅ Habitación encontrada:', habitacion);
+      this.habitacionEncontrada.set(habitacion);
+      this.buscandoHabitacion.set(false);
+    },
+    error: (error: any) => {
+      console.error('❌ Error al buscar habitación:', error);
+      console.log('📊 Status:', error.status);
+      console.log('📄 Mensaje:', error.message);
+      console.log('🔍 Error completo:', error);
+      
+      this.errorBusqueda.set(
+        'No se encontró la habitación o no tiene un cliente asignado'
+      );
+      this.habitacionEncontrada.set(null);
+      this.buscandoHabitacion.set(false);
+    }
+  });
+}
   
   // Cargar servicios disponibles
   cargarServicios() {
@@ -251,7 +260,7 @@ export class ContratarService implements OnInit {
     return {
       numero: habitacion?.numeroHabitacion,
       tipo: habitacion?.tipoHabitacion?.nombre,
-      estado: habitacion?.estado
+      estado: habitacion?.activa
     };
   }
 }
