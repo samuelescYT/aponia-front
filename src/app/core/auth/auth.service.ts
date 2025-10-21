@@ -169,4 +169,37 @@ export class AuthService {
       this.user.set(null);
     }
   }
+
+  // ===================== CHANGE PASSWORD =====================
+async cambiarPassword(
+  currentPassword: string,
+  newPassword: string,
+  confirmPassword: string
+): Promise<boolean> {
+  try {
+    const res = await firstValueFrom(
+      this.http.post<any>(
+        `${this.api}/password`,
+        { currentPassword, newPassword, confirmPassword },
+        {
+          withCredentials: true,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      )
+    );
+
+    if (res?.ok) {
+      console.log('✅ Contraseña actualizada correctamente');
+      return true;
+    } else {
+      console.warn('⚠️ Error al cambiar contraseña:', res?.error);
+      return false;
+    }
+  } catch (error: any) {
+    console.error('❌ Error en cambiarPassword:', error);
+    return false;
+  }
+}
+
+  
 }

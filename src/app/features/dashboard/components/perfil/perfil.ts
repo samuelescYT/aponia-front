@@ -30,12 +30,20 @@ export class PerfilComponent implements OnInit {
 
   // Formulario
   perfilForm: FormGroup;
+  passwordForm: FormGroup;
+
 
   constructor() {
     this.perfilForm = this.fb.group({
       nombreCompleto: ['', [Validators.required, Validators.minLength(3)]],
       telefono: ['', [Validators.required, Validators.pattern(/^[+]?[\d\s-()]+$/)]]
     });
+    this.passwordForm = this.fb.group({
+    currentPassword: ['', [Validators.required]],
+    newPassword: ['', [Validators.required]],
+    confirmPassword: ['', [Validators.required]]
+});
+
   }
 
   ngOnInit() {
@@ -141,8 +149,6 @@ export class PerfilComponent implements OnInit {
   });
 }
 
-
-
   // Helpers para validación
   get nombreInvalido() {
     const control = this.perfilForm.get('nombreCompleto');
@@ -153,4 +159,32 @@ export class PerfilComponent implements OnInit {
     const control = this.perfilForm.get('telefono');
     return control?.invalid && (control?.dirty || control?.touched);
   }
+
+  async cambiarPassword() {
+  if (this.passwordForm.invalid) {
+    this.passwordForm.markAllAsTouched();
+    return;
+  }
+
+  const { currentPassword, newPassword, confirmPassword } = this.passwordForm.value;
+
+  if (newPassword !== confirmPassword) {
+    alert('⚠️ Las contraseñas nuevas no coinciden');
+    return;
+  }
+
+  try {
+    const ok = await this.auth.cambiarPassword(currentPassword, newPassword, confirmPassword);
+    if (ok) {
+      alert('✅ Contraseña actualizada correctamente');
+      this.passwordForm.reset();
+    } else {
+      alert('❌ No se pudo actualizar la contraseña. Verifique los datos.');
+    }
+  } catch (err) {
+    console.error('Error al cambiar contraseña:', err);
+    alert('❌ Ocurrió un error inesperado al intentar cambiar la contraseña.');
+  }
+}
+
 }

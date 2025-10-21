@@ -50,4 +50,9 @@ export class UsuariosService {
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/${id}/perfil-empleado`, body, this.httpOptions);
   }
+
+  cambiarPassword(id: string, body: { passwordActual: string; passwordNueva: string }): Observable<any> {
+  return this.http.put(`${this.baseUrl}/${id}/password`, body, this.httpOptions);
+}
+
 }
