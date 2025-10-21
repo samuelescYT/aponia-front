@@ -40,4 +40,9 @@ export class ReservasApiService {
   cancelarReserva(id: string) {
     return this.http.post<void>(`${this.baseUrl}/${id}/cancelar`, {}, { withCredentials: true });
   }
+
+  getAllReservas() {
+  return this.http.get<Reserva[]>(`${this.baseUrl}/all`, { withCredentials: true });
+}
+
 }

@@ -1,0 +1,88 @@
+<div class="p-6 bg-white rounded-2xl shadow">
+  <h2 class="text-2xl font-semibold text-[#0a3d62] mb-4">Gestión de Reservas</h2>
+
+  <div class="flex justify-between items-center mb-4">
+    <div>
+      <button
+        (click)="filtro.set('todas')"
+        [class.bg-blue-600]="filtro() === 'todas'"
+        class="px-4 py-2 rounded-md text-white bg-gray-500 hover:bg-blue-600 mr-2"
+      >
+        Todas
+      </button>
+      <button
+        (click)="filtro.set('activas')"
+        [class.bg-blue-600]="filtro() === 'activas'"
+        class="px-4 py-2 rounded-md text-white bg-gray-500 hover:bg-blue-600"
+      >
+        Activas
+      </button>
+    </div>
+    <button
+      (click)="cargarReservas()"
+      class="px-4 py-2 bg-[#0a3d62] text-white rounded-md hover:bg-[#0b4a7d]"
+    >
+      🔄 Recargar
+    </button>
+  </div>
+
+  <!-- Mensajes -->
+  <p *ngIf="mensaje()" class="text-green-600 mb-2">{{ mensaje() }}</p>
+  <p *ngIf="error()" class="text-red-600 mb-2">{{ error() }}</p>
+
+  <!-- Tabla de reservas -->
+  <div *ngIf="!cargando(); else cargandoTpl">
+    <table class="min-w-full border border-gray-300 text-sm text-left">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-4 py-2 border">Código</th>
+          <th class="px-4 py-2 border">Cliente</th>
+          <th class="px-4 py-2 border">Entrada</th>
+          <th class="px-4 py-2 border">Salida</th>
+          <th class="px-4 py-2 border">Estado</th>
+          <th class="px-4 py-2 border">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of reservasFiltradas()" class="hover:bg-gray-50">
+          <td class="px-4 py-2 border">{{ r.codigo }}</td>
+          <td class="px-4 py-2 border">{{ r.cliente?.nombreCompleto || 'Sin cliente' }}</td>
+          <td class="px-4 py-2 border">{{ r.estancias?.[0]?.entrada || '—' }}</td>
+          <td class="px-4 py-2 border">{{ r.estancias?.[0]?.salida || '—' }}</td>
+          <td class="px-4 py-2 border">{{ r.estado }}</td>
+          <td class="px-4 py-2 border">
+            <button (click)="verDetalle(r)" class="text-blue-600 hover:underline mr-3">Ver</button>
+            <button
+              *ngIf="r.estado === 'ACTIVA'"
+              (click)="cancelarReserva(r.id)"
+              class="text-red-600 hover:underline"
+            >
+              Cancelar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Detalle -->
+  <div *ngIf="reservaSeleccionada()" class="mt-6 p-4 border rounded-lg bg-gray-50">
+    <h3 class="text-lg font-semibold mb-2">Detalles de la Reserva</h3>
+    <p><strong>Código:</strong> {{ reservaSeleccionada()?.codigo }}</p>
+    <p><strong>Cliente:</strong> {{ reservaSeleccionada()?.cliente?.nombreCompleto }}</p>
+    <p><strong>Correo:</strong> {{ reservaSeleccionada()?.cliente?.email }}</p>
+    <p><strong>Entrada:</strong> {{ reservaSeleccionada()?.estancias?.[0]?.entrada || '—' }}</p>
+    <p><strong>Salida:</strong> {{ reservaSeleccionada()?.estancias?.[0]?.salida || '—' }}</p>
+    <p><strong>Estado:</strong> {{ reservaSeleccionada()?.estado }}</p>
+    <p>
+      <strong>Total pagado:</strong> ${{ reservaSeleccionada()?.resumenPago?.totalPagado || 0 }}
+    </p>
+    <p>
+      <strong>Pendiente:</strong> ${{ reservaSeleccionada()?.resumenPago?.saldoPendiente || 0 }}
+    </p>
+  </div>
+
+  <ng-template #cargandoTpl>
+    <p class="text-gray-500">Cargando reservas...</p>
+  </ng-template>
+</div>

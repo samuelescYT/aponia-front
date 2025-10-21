@@ -5,7 +5,7 @@ import { ReservaServicio } from './reserva-servicio.model';
 import { Pago } from './pago.model';
 import { ResumenPago } from './resumen-pago.model';
 
-export type EstadoReserva = 'PENDIENTE' | 'CONFIRMADA' | 'CANCELADA' | 'COMPLETADA';
+export type EstadoReserva =  'CONFIRMADA' | 'CANCELADA' | 'COMPLETADA';
 
 export interface Reserva {
   id: string;

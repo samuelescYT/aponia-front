@@ -28,7 +28,7 @@ export class ReservasListComponent implements OnInit {
 
     switch (filtro) {
       case 'ACTIVAS':
-        return todas.filter(r => r.estado === 'PENDIENTE' || r.estado === 'CONFIRMADA');
+        return todas.filter(r =>  r.estado === 'CONFIRMADA');
       case 'COMPLETADAS':
         return todas.filter(r => r.estado === 'COMPLETADA');
       case 'CANCELADAS':
@@ -41,7 +41,7 @@ export class ReservasListComponent implements OnInit {
   // Contadores para los badges
   totalReservas = computed(() => this.reservas().length);
   reservasActivas = computed(() => 
-    this.reservas().filter(r => r.estado === 'PENDIENTE' || r.estado === 'CONFIRMADA').length
+    this.reservas().filter(r =>  r.estado === 'CONFIRMADA').length
   );
   reservasCompletadas = computed(() => 
     this.reservas().filter(r => r.estado === 'COMPLETADA').length

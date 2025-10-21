@@ -22,6 +22,7 @@ import { HomeRecepcionista } from './features/dashboard-recepcionista/components
 import { ContratarService } from './features/dashboard-recepcionista/components/contratar-service/contratar-service';
 import { DashboardRecepcionista } from './features/dashboard-recepcionista/dashboard-recepcionista';
 import { PerfilComponent } from './features/dashboard/components/perfil/perfil';
+import { GestionReservasComponent  } from './features/dashboard-recepcionista/components/gestion-reservas/gestion-reservas.component';
 
 
 
@@ -94,7 +95,8 @@ export const routes: Routes = [
     {
       path: 'contratar-servicio',
       component: ContratarService
-    }
+    },
+    { path: 'gestion-reservas', component: GestionReservasComponent }
   ]
 }
 ];

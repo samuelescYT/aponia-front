@@ -118,8 +118,6 @@
         <!-- Badge de estado sobre la imagen -->
         <span
           class="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold uppercase shadow-lg"
-          [class.bg-yellow-100]="r.estado === 'PENDIENTE'"
-          [class.text-yellow-800]="r.estado === 'PENDIENTE'"
           [class.bg-green-100]="r.estado === 'CONFIRMADA'"
           [class.text-green-800]="r.estado === 'CONFIRMADA'"
           [class.bg-blue-100]="r.estado === 'COMPLETADA'"
@@ -176,7 +174,7 @@
 
         <!-- Acciones -->
         <div class="pt-3 border-t border-slate-100">
-          @if (r.estado === 'PENDIENTE' || r.estado === 'CONFIRMADA') {
+          @if ( r.estado === 'CONFIRMADA') {
           <button
             (click)="cancelar(r.id)"
             class="w-full px-4 py-2 bg-red-50 text-red-700 text-sm font-medium rounded-lg hover:bg-red-100 transition-all"
