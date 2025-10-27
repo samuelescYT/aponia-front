@@ -61,11 +61,17 @@ export class ReservasListComponent implements OnInit {
     next: (data) => {
       console.log('📦 Datos recibidos del backend:', data);
       
-      // Verificar la estructura de la primera reserva
+      // Verificar la estructura de las reservas
       if (data.length > 0) {
-        console.log('🔍 Estructura de la primera reserva:', data[0]);
-        console.log('🏨 Estancias:', data[0].estancias);
-        console.log('📅 Entrada:', data[0].estancias?.[0]?.entrada);
+        data.forEach((reserva, index) => {
+          console.log(`🔍 Reserva ${index + 1}:`, reserva.codigo);
+          console.log(`   Estancias:`, reserva.estancias);
+          if (reserva.estancias && reserva.estancias.length > 0) {
+            const estancia = reserva.estancias[0];
+            console.log(`   Habitación asignada:`, estancia.habitacionAsignada);
+            console.log(`   Número de habitación:`, estancia.habitacionAsignada?.numero);
+          }
+        });
       }
       
       // Ordenar por fecha de creación más reciente primero
@@ -127,5 +133,13 @@ export class ReservasListComponent implements OnInit {
 
   editarReserva(id: string) {
   this.router.navigate(['/dashboard/reservas/editar', id]);
+}
+
+// En reservas-list.component.ts
+getNumeroHabitacion(estancia: any): string {
+  if (estancia?.habitacionAsignada?.numero) {
+    return `#${estancia.habitacionAsignada.numero}`;
+  }
+  return 'Por asignar';
 }
 }
