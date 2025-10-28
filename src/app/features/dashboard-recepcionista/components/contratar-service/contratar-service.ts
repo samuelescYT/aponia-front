@@ -2,7 +2,7 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { ReservaServicioService, HabitacionConCliente, ReservaServicio } from '../../../../core/services/contrato-servicio/contrato-servicio.service';
 import { tap, catchError } from 'rxjs/operators'; 
 import { of } from 'rxjs';
@@ -32,11 +32,14 @@ export class ContratarService implements OnInit {
   
   // Señales para manejo de estado
   buscandoHabitacion = signal(false);
+  habitacionesEncontrada = signal<HabitacionConCliente | null>(null);
   habitacionEncontrada = signal<HabitacionConCliente | null>(null);
   servicios = signal<Servicio[]>([]);
   cargandoServicios = signal(false);
   contratando = signal(false);
   errorBusqueda = signal<string | null>(null);
+  reservaSeleccionada = signal<any>(null);
+  mostrarSelectorReservas = signal(false);
   
   // Señales para precios
   precioBaseReserva = signal<number>(0);
@@ -99,33 +102,43 @@ export class ContratarService implements OnInit {
   }
 
   private validarYEstablecerHabitacion(habitacion: HabitacionConCliente) {
-    console.log('📋 Validando habitación:', habitacion);
-    
-    if (!habitacion.reservaActual) {
-      console.log('⚠️ Habitación sin reserva activa');
-      this.errorBusqueda.set('La habitación no tiene una reserva activa asignada');
-      return;
-    }
-
-    this.obtenerDatosReserva(habitacion);
-
-    console.log('🎯 Habitación válida encontrada:', {
-      numero: habitacion.numeroHabitacion,
-      cliente: habitacion.reservaActual.cliente.nombreCompleto,
-      reservaId: habitacion.reservaActual.id
-    });
-
-    this.habitacionEncontrada.set(habitacion);
-    this.errorBusqueda.set(null);
+  console.log('📋 Validando habitación:', habitacion);
+  
+  // Siempre establecer la habitación encontrada
+  this.habitacionEncontrada.set(habitacion);
+  
+  // Si hay múltiples reservas, mostrar selector (NO mostrar la card todavía)
+  if (habitacion.reservas && habitacion.reservas.length > 1) {
+    console.log('🔢 Múltiples reservas encontradas:', habitacion.reservas.length);
+    this.mostrarSelectorReservas.set(true);
+    this.reservaSeleccionada.set(null); // Limpiar reserva seleccionada
+    return;
   }
+  
+  // Si solo hay una reserva, seleccionarla automáticamente
+  if (habitacion.reservas && habitacion.reservas.length === 1) {
+    this.seleccionarReserva(habitacion.reservas[0]);
+    this.mostrarSelectorReservas.set(false);
+  } else {
+    this.errorBusqueda.set('La habitación no tiene reservas activas');
+    this.habitacionEncontrada.set(null);
+  }
+}
 
-  private obtenerDatosReserva(habitacion: HabitacionConCliente) {
-    const reservaActual = habitacion.reservaActual;
-    
-    if (reservaActual) {
-      const noches = this.calcularNoches(reservaActual.fechaInicio, reservaActual.fechaFin);
-      const precioPorNoche = this.estimarPrecioPorNoche(habitacion.tipoHabitacion.nombre);
-      const precioBase = noches * precioPorNoche;
+seleccionarReserva(reserva: any) {
+  this.reservaSeleccionada.set(reserva);
+  this.obtenerDatosReserva(reserva);
+  this.mostrarSelectorReservas.set(false);
+  
+  console.log('🎯 Reserva seleccionada:', reserva);
+}
+
+private obtenerDatosReserva(reservaSeleccionada: any) {    
+
+    if (reservaSeleccionada) {
+    const noches = this.calcularNoches(reservaSeleccionada.fechaInicio, reservaSeleccionada.fechaFin);
+    const precioPorNoche = this.estimarPrecioPorNoche(this.habitacionEncontrada()?.tipoHabitacion?.nombre || '');      
+    const precioBase = noches * precioPorNoche;
       
       this.precioBaseReserva.set(precioBase);
       this.nochesReserva.set(noches);
@@ -133,7 +146,7 @@ export class ContratarService implements OnInit {
       this.actualizarTotalFinal(); // ✅ Actualizar el total
       
       console.log('💰 Precio base estimado:', {
-        tipoHabitacion: habitacion.tipoHabitacion.nombre,
+        tipoHabitacion: this.habitacionEncontrada()?.tipoHabitacion?.nombre,
         noches: noches,
         precioPorNoche: precioPorNoche,
         totalBase: precioBase
@@ -206,18 +219,30 @@ export class ContratarService implements OnInit {
   }
   
   contratarServicio() {
-    if (this.contratoForm.invalid || !this.habitacionEncontrada()) {
-      alert('Por favor complete todos los campos requeridos');
-      return;
-    }
+    console.log('🔍 DEBUG - reservaSeleccionada:', this.reservaSeleccionada());
+    console.log('🔍 DEBUG - id de la reserva:', this.reservaSeleccionada()?.id);
+
+    if (this.contratoForm.invalid || !this.reservaSeleccionada()) {
+    alert('Por favor seleccione una reserva');
+    return;
+  }
     
     const servicio = this.getServicioSeleccionado();
-    const habitacion = this.habitacionEncontrada();
-    
-    if (!servicio || !habitacion) {
+    const reservaSeleccionada = this.reservaSeleccionada();   
+
+    if (!servicio) {
       alert('Por favor seleccione un servicio');
       return;
     }
+
+    // VERIFICAR que el ID esté disponible
+  const reservaId = reservaSeleccionada.id;
+  console.log('🔍 DEBUG - reservaId a enviar:', reservaId);
+  
+  if (!reservaId) {
+    alert('Error: No se pudo obtener el ID de la reserva');
+    return;
+  }
 
     const cantidadPersonas = Number(this.contratoForm.value.cantidadPersonas) || 1;
     
@@ -231,13 +256,13 @@ export class ContratarService implements OnInit {
       return;
     }
 
-    if (!habitacion.reservaActual) {
-      alert('La habitación no tiene una reserva activa');
+    if (!reservaSeleccionada) {
+        alert('No hay una reserva seleccionada');
       return;
     }
 
     const confirmacion = confirm(
-      `¿Confirmar contratación del servicio "${servicio.nombre}" para ${habitacion.reservaActual.cliente.nombreCompleto}?\n\n` +
+      `¿Confirmar contratación del servicio "${servicio.nombre}" para ${reservaSeleccionada.cliente.nombreCompleto}?\n\n` +
       `Precio del servicio: $${this.calcularPrecioServicio().toLocaleString('es-CO')}\n` +
       `Precio estadía: $${this.precioBaseReserva().toLocaleString('es-CO')}\n` +
       `Total final: $${this.totalFinal().toLocaleString('es-CO')}`
@@ -249,10 +274,10 @@ export class ContratarService implements OnInit {
 
     const reservaServicioData: ReservaServicio = {
       reserva: {
-        id: habitacion.reservaActual.id
+        id: reservaSeleccionada.reservaId
       },
       servicio: {
-        id: this.contratoForm.value.servicioId
+        id: reservaId  
       },
       fecha: this.formatDate(this.contratoForm.value.fecha),
       horaInicio: this.formatTime(this.contratoForm.value.hora),
@@ -262,23 +287,34 @@ export class ContratarService implements OnInit {
       observaciones: this.contratoForm.value.observaciones
     };
 
-    // ✅ CORREGIDO: Pasar los tres argumentos requeridos
-  this.reservaServicioService.crear(
-    reservaServicioData,
-    habitacion.reservaActual.id,
-    this.contratoForm.value.servicioId
-  ).subscribe({
-    next: () => {
-      alert('¡Servicio contratado exitosamente!\nEl cargo se agregó a la cuenta del cliente.');
-      this.limpiarFormularios();
-    },
-    error: (error: any) => {
-      console.error('Error al contratar servicio:', error);
-      const mensaje = error.error?.error || 'Error al contratar el servicio. Por favor intente nuevamente.';
-      alert(`Error: ${mensaje}`);
-      this.contratando.set(false);
-    }
+    console.log('🔍 DEBUG - Llamando servicio con:', {
+    reservaId: reservaId,
+    servicioId: this.contratoForm.value.servicioId,
+    data: reservaServicioData
   });
+
+    // ✅ CORREGIDO: Pasar los tres argumentos requeridos
+  // SOLUCIÓN: Usar HttpClient directamente
+const params = new HttpParams()
+  .set('reservaId', reservaId)
+  .set('servicioId', this.contratoForm.value.servicioId);
+
+this.http.post<void>(
+  'http://localhost:8083/api/reservas-servicios/add',
+  reservaServicioData,
+  { params }
+).subscribe({
+  next: () => {
+    alert('¡Servicio contratado exitosamente!\nEl cargo se agregó a la cuenta del cliente.');
+    this.limpiarFormularios();
+  },
+  error: (error: any) => {
+    console.error('Error al contratar servicio:', error);
+    const mensaje = error.error?.error || 'Error al contratar el servicio. Por favor intente nuevamente.';
+    alert(`Error: ${mensaje}`);
+    this.contratando.set(false);
+  }
+});
 }
 
   // Métodos de cálculo
@@ -337,19 +373,19 @@ export class ContratarService implements OnInit {
   // Getters para el template
   get informacionReserva() {
     const habitacion = this.habitacionEncontrada();
-    const reservaActual = habitacion?.reservaActual as any;
+    const reservas = habitacion?.reservas as any;
     
     return {
-      fechaInicio: reservaActual?.fechaInicio,
-      fechaFin: reservaActual?.fechaFin,
-      estado: reservaActual?.estado || 'ACTIVA'
+      fechaInicio: reservas?.fechaInicio,
+      fechaFin: reservas?.fechaFin,
+      estado: reservas?.estado || 'ACTIVA'
     };
   }
 
   get clienteActual() {
     const habitacion = this.habitacionEncontrada();
-    const reservaActual = habitacion?.reservaActual as any;
-    return reservaActual?.cliente;
+    const reservas = habitacion?.reservas as any;
+    return reservas?.cliente;
   }
 
   get informacionHabitacion() {

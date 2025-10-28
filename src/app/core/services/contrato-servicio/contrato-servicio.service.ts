@@ -28,8 +28,8 @@ export interface HabitacionConCliente {
     nombre: string;
     descripcion?: string;
   };
-  reservaActual?: {
-    id: string;
+  reservas?: { 
+    id: string; // ← CAMBIO: usar Array<> o [] para indicar que es array    id: string;
     fechaInicio: string;
     fechaFin: string;
     estado: 'CONFIRMADA' | 'CANCELADA' | 'COMPLETADA'; // ← CORREGIR aquí también
@@ -40,7 +40,7 @@ export interface HabitacionConCliente {
       telefono: string;
       documento: string;
     };
-  };
+  }[];
 }
 
 @Injectable({
@@ -120,7 +120,10 @@ export class ReservaServicioService {
               nombre: habitacionResponse.tipo?.nombre || habitacionResponse.tipoNombre,
               descripcion: habitacionResponse.tipo?.descripcion || ''
             },
-            reservaActual: this.mapearEstanciaAReserva(clienteData)
+            // ✅ CAMBIO IMPORTANTE: Asegurar que reservas sea un array
+            reservas: Array.isArray(clienteData) ? 
+              clienteData.map(item => this.mapearEstanciaAReserva(item)) : 
+              clienteData ? [this.mapearEstanciaAReserva(clienteData)] : []
           };
 
           console.log('🏁 Habitación mapeada final:', habitacionConCliente);
@@ -137,29 +140,30 @@ export class ReservaServicioService {
 
 
 // En contrato-servicio.service.ts
-private buscarEstanciaActivaReal(habitacionId: string): Observable<any> {
+private buscarEstanciaActivaReal(habitacionId: string): Observable<any[]> {
   let habitacionIdFormateado = habitacionId;
   if (/^\d+$/.test(habitacionId)) {
     habitacionIdFormateado = 'hab_' + habitacionId;
   }
   
-  const estanciaUrl = `${this.estanciaUrl}/habitacion/${habitacionIdFormateado}/cliente-activo`;
+  // CAMBIO: Nueva URL que devuelve array
+  const estanciaUrl = `http://localhost:8083/api/estancias/habitacion/${habitacionIdFormateado}/reservas-activas`;
   
-  console.log('🔍 Buscando cliente activo REAL en:', estanciaUrl);
+  console.log('🔍 Buscando TODAS las reservas activas en:', estanciaUrl);
   
-  return this.http.get<any>(estanciaUrl).pipe(
-    tap((clienteData: any) => {
-      console.log('✅ Cliente activo REAL encontrado:', clienteData);
+  return this.http.get<any[]>(estanciaUrl).pipe(
+    tap((reservasData: any[]) => {
+      console.log('✅ Reservas activas encontradas:', reservasData);
     }),
   );
 }
 
+// En contrato-servicio.service.ts - busca este método y modifícalo:
 private mapearEstanciaAReserva(clienteData: any): any {
-  // ✅ Solo mapear si hay datos reales del backend
   if (!clienteData) return undefined;
   
   return {
-    id: clienteData.reservaId,
+    id: clienteData.reservaId || clienteData.id,
     fechaInicio: clienteData.fechaInicio,
     fechaFin: clienteData.fechaFin,
     estado: clienteData.estado,
@@ -177,7 +181,7 @@ private mapearRespuestaHabitacion(response: any): HabitacionConCliente {
       nombre: response.tipo?.nombre || response.tipoHabitacion?.nombre,
       descripcion: response.tipo?.descripcion || response.tipoHabitacion?.descripcion
     },
-    reservaActual: undefined
+    reservas: undefined
   };
 }
 
@@ -203,6 +207,10 @@ private mapearRespuestaHabitacion(response: any): HabitacionConCliente {
   }
 
   crear(reservaServicio: ReservaServicio, reservaId: string, servicioId: string): Observable<void> {
+    console.log('🔍 DEBUG - Parámetros enviados al servicio:');
+    console.log('  - reservaId:', reservaId);
+    console.log('  - servicioId:', servicioId);
+    console.log('  - reservaServicio:', reservaServicio);
     const params = new HttpParams()
       .set('reservaId', reservaId)
       .set('servicioId', servicioId);
