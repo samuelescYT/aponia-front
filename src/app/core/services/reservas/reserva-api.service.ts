@@ -1,6 +1,7 @@
 import { EstadoReserva, Reserva } from './../../../shared/models/reserva.model';
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs/internal/Observable';
 
 export interface ReservaHabitacionRequest {
   tipoHabitacionId: string;
@@ -51,5 +52,9 @@ actualizarReserva(clienteId: string, reservaId: string, data: ReservaHabitacionR
     data,
     { withCredentials: true }
   );
+}
+
+getServiciosPorReserva(reservaId: string): Observable<any[]> {
+  return this.http.get<any[]>(`http://localhost:8083/api/reservas-servicios/reserva/${reservaId}`);
 }
 }
