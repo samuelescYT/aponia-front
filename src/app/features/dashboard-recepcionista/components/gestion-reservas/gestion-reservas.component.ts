@@ -7,7 +7,7 @@ import { HttpClient } from '@angular/common/http';
 type ReservaConEstancia = Reserva & {
   entrada?: string | null;
   salida?: string | null;
-  // si quieres, también puedes añadir clienteNombre/clienteEmail aquí, pero no es necesario
+  mostrarDetalle?: boolean;
 };
 
 @Component({
@@ -26,13 +26,23 @@ export class GestionReservasComponent implements OnInit {
   reservaSeleccionada = signal<ReservaConEstancia | null>(null);
 
   // Filtrado
-  filtro = signal<'todas' | 'activas'>('todas');
-  reservasFiltradas = computed(() => {
-    const todas = this.reservas();
-    return this.filtro() === 'activas'
-      ? todas.filter(r => String(r.estado).toUpperCase() === 'CONFIRMADA')
-      : todas;
-  });
+// Filtrado
+filtro = signal<'todas' | 'completadas' | 'confirmadas' | 'canceladas'>('todas');
+reservasFiltradas = computed(() => {
+  const todas = this.reservas();
+  const filtroActual = this.filtro();
+  
+  switch(filtroActual) {
+    case 'completadas':
+      return todas.filter(r => String(r.estado).toUpperCase() === 'COMPLETADA');
+    case 'confirmadas':
+      return todas.filter(r => String(r.estado).toUpperCase() === 'CONFIRMADA');
+    case 'canceladas':
+      return todas.filter(r => String(r.estado).toUpperCase() === 'CANCELADA');
+    default: // 'todas'
+      return todas;
+  }
+});
 
   constructor(private reservasApi: ReservasApiService, private http: HttpClient) {}
 
@@ -51,26 +61,22 @@ export class GestionReservasComponent implements OnInit {
 
         // CORRECCIÓN: Declarar adaptadas en el scope correcto
         const adaptadas: ReservaConEstancia[] = (data as any[]).map((r: any) => {
-          // Obtenemos las fechas de check-in/check-out desde la estancia
-          const fechasEstancia = this.obtenerFechasEstancia(r);
-          
-          return {
-            // Propiedades básicas de la reserva
-            ...r,
-            // Información del cliente
-            cliente: {
-              id: r.clienteId ?? (r.cliente?.id ?? null),
-              rol: (r.cliente?.rol ?? null) as any,
-              nombreCompleto: r.clienteNombre ?? r.cliente?.nombreCompleto ?? null,
-              email: r.clienteEmail ?? r.cliente?.email ?? null,
-            } as any,
-            // Fechas de estancia (check-in/check-out)
-            entrada: fechasEstancia.entrada,
-            salida: fechasEstancia.salida,
-            // Estancia completa si está disponible
-            estancia: r.estancia ?? null
-          };
-        });
+  const fechasEstancia = this.obtenerFechasEstancia(r);
+  
+  return {
+    ...r,
+    cliente: {
+      id: r.clienteId ?? (r.cliente?.id ?? null),
+      rol: (r.cliente?.rol ?? null) as any,
+      nombreCompleto: r.clienteNombre ?? r.cliente?.nombreCompleto ?? null,
+      email: r.clienteEmail ?? r.cliente?.email ?? null,
+    } as any,
+    entrada: fechasEstancia.entrada,
+    salida: fechasEstancia.salida,
+    estancia: r.estancia ?? null,
+    mostrarDetalle: false // ← INICIALIZAR EN FALSE
+  };
+});
 
         console.log('🔄 Reservas adaptadas:', adaptadas);
         this.reservas.set(adaptadas);
@@ -385,5 +391,125 @@ calcularTotalEstadia(reserva: any): number {
   const precioPorNoche = reserva?.estancia?.precioPorNoche || 
                          reserva?.estancias?.[0]?.precioPorNoche || 0;
   return noches * precioPorNoche;
+}
+
+// Señales para el checkout
+mostrandoCheckout = signal(false);
+reservaCheckout = signal<any>(null);
+factura = signal<any>(null);
+procesandoPago = signal(false);
+
+// Método para iniciar checkout
+iniciarCheckout(reserva: any): void {
+  console.log('🔍 Estructura completa de la reserva:', JSON.stringify(reserva, null, 2));
+  console.log('🔍 Estancias:', reserva.estancias);
+  console.log('🔍 Estancia:', reserva.estancia);
+  
+  this.reservaCheckout.set(reserva);
+  this.generarFactura(reserva);
+  this.mostrandoCheckout.set(true);
+}
+
+// Método para generar la factura
+generarFactura(reserva: any): void {
+  const totalEstadia = this.calcularTotalEstadia(reserva);
+  const servicios = this.serviciosReserva(); // O cargar específicos para esta reserva
+  
+  const totalServicios = servicios.reduce((sum, servicio) => sum + (servicio.totalServicio || 0), 0);
+  const iva = 0.19; // 19% IVA
+  const subtotal = totalEstadia + totalServicios;
+  const valorIva = subtotal * iva;
+  const total = subtotal + valorIva;
+
+  const factura = {
+    reserva: reserva,
+    fechaEmision: new Date().toISOString().split('T')[0],
+    items: [
+      {
+        descripcion: `Estadía - ${this.calcularNoches(reserva)} noches`,
+        cantidad: 1,
+        precioUnitario: totalEstadia,
+        total: totalEstadia
+      },
+      ...servicios.map(servicio => ({
+        descripcion: servicio.servicio?.nombre || 'Servicio adicional',
+        cantidad: servicio.numeroPersonas,
+        precioUnitario: servicio.precioPorPersona,
+        total: servicio.totalServicio
+      }))
+    ],
+    subtotal: subtotal,
+    iva: valorIva,
+    total: total,
+    servicios: servicios
+  };
+
+  console.log('🧾 Factura generada:', factura);
+  this.factura.set(factura);
+}
+
+// Método para procesar el pago (ficticio)
+procesarPago(): void {
+  this.procesandoPago.set(true);
+  
+  // Simular procesamiento de pago
+  setTimeout(() => {
+    this.completarCheckout();
+  }, 2000);
+}
+
+// Método para completar el checkout
+completarCheckout(): void {
+  const reserva = this.reservaCheckout();
+  if (!reserva) return;
+
+  this.procesandoPago.set(true);
+
+  this.reservasApi.completarCheckout(reserva).subscribe({
+    next: () => {
+      console.log('✅ Checkout completado exitosamente');
+      alert('¡Check-out completado exitosamente! La reserva ha sido marcada como COMPLETADA.');
+      
+      // Actualizar el estado localmente
+      this.reservas.update(reservas => 
+        reservas.map(r => 
+          r.id === reserva.id ? { ...r, estado: 'COMPLETADA' } : r
+        )
+      );
+      
+      this.cerrarCheckout();
+      this.procesandoPago.set(false);
+    },
+    error: (error) => {
+      console.error('❌ Error en checkout:', error);
+      alert('Error al procesar el check-out. Por favor intente nuevamente.');
+      this.procesandoPago.set(false);
+    }
+  });
+}
+
+// Método para cerrar el modal de checkout
+cerrarCheckout(): void {
+  this.mostrandoCheckout.set(false);
+  this.reservaCheckout.set(null);
+  this.factura.set(null);
+}
+
+// Método para mostrar/ocultar detalles
+toggleDetalle(reserva: ReservaConEstancia): void {
+  // Cerrar otros detalles abiertos
+  this.reservas().forEach(r => {
+    if (r !== reserva && r.mostrarDetalle) {
+      r.mostrarDetalle = false;
+    }
+  });
+  
+  // Toggle el estado de esta reserva
+  reserva.mostrarDetalle = !reserva.mostrarDetalle;
+  
+  if (reserva.mostrarDetalle) {
+    console.log('📋 Mostrando detalles de reserva:', reserva.codigo);
+    this.cargarServiciosReserva(reserva.id);
+  }
 }
 }

@@ -21,16 +21,40 @@
         Todas
       </button>
       <button
-        (click)="filtro.set('activas')"
+        (click)="filtro.set('completadas')"
         [class]="
-          filtro() === 'activas'
+          filtro() === 'completadas'
             ? 'bg-[#0a3d62] text-white shadow-md'
             : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
         "
         class="px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2"
       >
         <span>✅</span>
-        Activas
+        Completadas
+      </button>
+      <button
+        (click)="filtro.set('confirmadas')"
+        [class]="
+          filtro() === 'confirmadas'
+            ? 'bg-[#0a3d62] text-white shadow-md'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+        "
+        class="px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2"
+      >
+        <span>🔒</span>
+        Confirmadas
+      </button>
+      <button
+        (click)="filtro.set('canceladas')"
+        [class]="
+          filtro() === 'canceladas'
+            ? 'bg-[#0a3d62] text-white shadow-md'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+        "
+        class="px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center gap-2"
+      >
+        <span>❌</span>
+        Canceladas
       </button>
     </div>
 
@@ -404,6 +428,22 @@
                       </ng-template>
                     </div>
                   </div>
+
+                  <!-- Botón de Check-out Mejorado -->
+                  <div
+                    *ngIf="reservaSeleccionada()?.estado === 'CONFIRMADA'"
+                    class="mt-6 pt-6 border-t"
+                  >
+                    <div class="flex justify-end">
+                      <button
+                        (click)="iniciarCheckout(reservaSeleccionada())"
+                        class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center gap-3 font-medium shadow-md hover:shadow-lg"
+                      >
+                        <span class="text-xl">🏁</span>
+                        <span>Realizar Check-out</span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </td>
             </tr>
@@ -436,4 +476,133 @@
       <p class="text-gray-600 font-medium">Cargando reservas...</p>
     </div>
   </ng-template>
+</div>
+
+<!-- ✅ MODAL DE CHECKOUT -->
+<div
+  *ngIf="mostrandoCheckout()"
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+>
+  <div class="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+    <!-- Header del modal -->
+    <div class="bg-[#0a3d62] text-white p-6 rounded-t-2xl">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-2xl font-bold flex items-center gap-3">
+            <span>🧾</span>
+            Factura - Check-out
+          </h2>
+          <p class="text-blue-100 mt-1">
+            Reserva: {{ reservaCheckout()?.codigo }} • Cliente:
+            {{ reservaCheckout()?.cliente?.nombreCompleto }}
+          </p>
+        </div>
+        <button
+          (click)="cerrarCheckout()"
+          class="text-white hover:text-blue-200 text-2xl"
+          [disabled]="procesandoPago()"
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- Contenido de la factura -->
+    <div class="p-6" *ngIf="factura()">
+      <!-- Información de la Factura -->
+      <div class="grid grid-cols-2 gap-6 mb-6">
+        <div>
+          <h3 class="font-semibold text-gray-800 mb-2">Hotel Aponia</h3>
+          <p class="text-sm text-gray-600">Calle Ficticia #123</p>
+          <p class="text-sm text-gray-600">Bogotá, Colombia</p>
+          <p class="text-sm text-gray-600">NIT: 123.456.789-0</p>
+        </div>
+        <div class="text-right">
+          <p class="text-sm text-gray-600">Factura #{{ reservaCheckout()?.codigo }}</p>
+          <p class="text-sm text-gray-600">Fecha: {{ factura().fechaEmision }}</p>
+          <p class="text-sm text-gray-600">
+            Estado: <span class="font-semibold text-green-600">PENDIENTE</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Tabla de Items -->
+      <div class="border border-gray-200 rounded-lg overflow-hidden mb-6">
+        <table class="min-w-full">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-b">
+                Descripción
+              </th>
+              <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-b">
+                Cantidad
+              </th>
+              <th class="px-4 py-3 text-right text-sm font-semibold text-gray-700 border-b">
+                Precio Unitario
+              </th>
+              <th class="px-4 py-3 text-right text-sm font-semibold text-gray-700 border-b">
+                Total
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr *ngFor="let item of factura().items">
+              <td class="px-4 py-3 text-sm text-gray-900">{{ item.descripcion }}</td>
+              <td class="px-4 py-3 text-sm text-gray-900 text-center">{{ item.cantidad }}</td>
+              <td class="px-4 py-3 text-sm text-gray-900 text-right">
+                {{ item.precioUnitario | currency : 'COP' : 'symbol' : '1.0-0' }}
+              </td>
+              <td class="px-4 py-3 text-sm text-gray-900 text-right">
+                {{ item.total | currency : 'COP' : 'symbol' : '1.0-0' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Totales -->
+      <div class="flex justify-end mb-6">
+        <div class="w-64 space-y-2">
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-600">Subtotal:</span>
+            <span class="font-medium">{{
+              factura().subtotal | currency : 'COP' : 'symbol' : '1.0-0'
+            }}</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-600">IVA (19%):</span>
+            <span class="font-medium">{{
+              factura().iva | currency : 'COP' : 'symbol' : '1.0-0'
+            }}</span>
+          </div>
+          <div class="flex justify-between text-lg font-bold border-t pt-2">
+            <span class="text-[#0a3d62]">TOTAL:</span>
+            <span class="text-green-600">{{
+              factura().total | currency : 'COP' : 'symbol' : '1.0-0'
+            }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div class="flex justify-end gap-4 pt-6 border-t">
+        <button
+          (click)="cerrarCheckout()"
+          [disabled]="procesandoPago()"
+          class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors font-medium"
+        >
+          Cancelar
+        </button>
+        <button
+          (click)="procesarPago()"
+          [disabled]="procesandoPago()"
+          class="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2"
+        >
+          <span *ngIf="procesandoPago()" class="animate-spin">⏳</span>
+          <span *ngIf="!procesandoPago()">💳</span>
+          {{ procesandoPago() ? 'Procesando...' : 'Pagar y Completar Check-out' }}
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
