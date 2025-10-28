@@ -322,4 +322,68 @@ obtenerNombreServicio(servicioReserva: any): string {
   
   return 'Servicio Adicional';
 }
+
+// Métodos helper para la información extendida
+calcularNoches(reserva: any): number {
+  if (!reserva?.entrada || !reserva?.salida) return 0;
+  
+  try {
+    const entrada = new Date(reserva.entrada);
+    const salida = new Date(reserva.salida);
+    const diffTime = Math.abs(salida.getTime() - entrada.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  } catch (error) {
+    return 0;
+  }
+}
+
+obtenerNumeroHuespedes(reserva: any): number {
+  // Buscar en la estancia
+  if (reserva?.estancia?.numeroHuespedes) {
+    return reserva.estancia.numeroHuespedes;
+  }
+  if (reserva?.estancias?.[0]?.numeroHuespedes) {
+    return reserva.estancias[0].numeroHuespedes;
+  }
+  return 1; // Valor por defecto
+}
+
+obtenerHabitacionAsignada(reserva: any): string {
+  // Buscar en la estancia
+  if (reserva?.estancia?.habitacionAsignada?.numero) {
+    return `Habitación #${reserva.estancia.habitacionAsignada.numero}`;
+  }
+  if (reserva?.estancias?.[0]?.habitacionAsignada?.numero) {
+    return `Habitación #${reserva.estancias[0].habitacionAsignada.numero}`;
+  }
+  return 'Por asignar';
+}
+
+obtenerTipoHabitacion(reserva: any): string {
+  // Buscar en la estancia
+  if (reserva?.estancia?.tipoHabitacion?.nombre) {
+    return reserva.estancia.tipoHabitacion.nombre;
+  }
+  if (reserva?.estancias?.[0]?.tipoHabitacion?.nombre) {
+    return reserva.estancias[0].tipoHabitacion.nombre;
+  }
+  return 'No especificado';
+}
+
+calcularTotalEstadia(reserva: any): number {
+  // Buscar en la estancia
+  if (reserva?.estancia?.totalEstadia) {
+    return reserva.estancia.totalEstadia;
+  }
+  if (reserva?.estancias?.[0]?.totalEstadia) {
+    return reserva.estancias[0].totalEstadia;
+  }
+  
+  // Calcular basado en precio por noche y noches
+  const noches = this.calcularNoches(reserva);
+  const precioPorNoche = reserva?.estancia?.precioPorNoche || 
+                         reserva?.estancias?.[0]?.precioPorNoche || 0;
+  return noches * precioPorNoche;
+}
 }

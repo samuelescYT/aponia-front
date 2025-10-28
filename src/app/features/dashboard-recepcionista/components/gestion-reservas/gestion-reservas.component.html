@@ -106,58 +106,308 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          <tr
-            *ngFor="let r of reservasFiltradas()"
-            class="hover:bg-blue-50 transition-colors duration-150"
-          >
-            <td class="px-4 py-3 whitespace-nowrap">
-              <div class="font-semibold text-[#0a3d62]">{{ r.codigo }}</div>
-            </td>
-            <td class="px-4 py-3 whitespace-nowrap">
-              <div class="font-medium text-gray-900">
-                {{ r.cliente?.nombreCompleto || 'Sin cliente' }}
-              </div>
-              <div class="text-sm text-gray-500">{{ r.cliente?.email || '—' }}</div>
-            </td>
-            <td class="px-4 py-3 whitespace-nowrap">
-              <div class="text-sm text-gray-900">
-                {{ r.entrada ? (r.entrada | date : 'yyyy-MM-dd HH:mm') : '—' }}
-              </div>
-            </td>
-            <td class="px-4 py-3 whitespace-nowrap">
-              <div class="text-sm text-gray-900">
-                {{ r.salida ? (r.salida | date : 'yyyy-MM-dd HH:mm') : '—' }}
-              </div>
-            </td>
-            <td class="px-4 py-3 whitespace-nowrap">
-              <span
-                [class]="getEstadoBadgeClass(r.estado)"
-                class="px-3 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1"
-              >
-                <span class="text-xs">{{ getEstadoIcon(r.estado) }}</span>
-                {{ r.estado }}
-              </span>
-            </td>
-            <td class="px-4 py-3 whitespace-nowrap">
-              <div class="flex items-center gap-2">
-                <button
-                  (click)="verDetalle(r)"
-                  class="text-blue-600 hover:text-blue-800 hover:underline transition-colors duration-200 flex items-center gap-1 text-sm font-medium"
+          <ng-container *ngFor="let r of reservasFiltradas()">
+            <!-- Fila de la reserva -->
+            <tr
+              class="hover:bg-blue-50 transition-colors duration-150"
+              [class.bg-blue-50]="reservaSeleccionada()?.id === r.id"
+            >
+              <td class="px-4 py-3 whitespace-nowrap">
+                <div class="font-semibold text-[#0a3d62]">{{ r.codigo }}</div>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap">
+                <div class="font-medium text-gray-900">
+                  {{ r.cliente?.nombreCompleto || 'Sin cliente' }}
+                </div>
+                <div class="text-sm text-gray-500">{{ r.cliente?.email || '—' }}</div>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap">
+                <div class="text-sm text-gray-900">
+                  {{ r.entrada ? (r.entrada | date : 'yyyy-MM-dd HH:mm') : '—' }}
+                </div>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap">
+                <div class="text-sm text-gray-900">
+                  {{ r.salida ? (r.salida | date : 'yyyy-MM-dd HH:mm') : '—' }}
+                </div>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap">
+                <span
+                  [class]="getEstadoBadgeClass(r.estado)"
+                  class="px-3 py-1 rounded-full text-xs font-medium inline-flex items-center gap-1"
                 >
-                  <span>👁️</span>
-                  Ver
-                </button>
-                <button
-                  *ngIf="r.estado === 'CONFIRMADA'"
-                  (click)="cancelarReserva(r.id)"
-                  class="text-red-600 hover:text-red-800 hover:underline transition-colors duration-200 flex items-center gap-1 text-sm font-medium ml-3"
-                >
-                  <span>❌</span>
-                  Cancelar
-                </button>
-              </div>
-            </td>
-          </tr>
+                  <span class="text-xs">{{ getEstadoIcon(r.estado) }}</span>
+                  {{ r.estado }}
+                </span>
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap">
+                <div class="flex items-center gap-2">
+                  <button
+                    (click)="verDetalle(r)"
+                    class="text-blue-600 hover:text-blue-800 hover:underline transition-colors duration-200 flex items-center gap-1 text-sm font-medium"
+                  >
+                    <span>👁️</span>
+                    Ver
+                  </button>
+                  <button
+                    *ngIf="r.estado === 'CONFIRMADA'"
+                    (click)="cancelarReserva(r.id)"
+                    class="text-red-600 hover:text-red-800 hover:underline transition-colors duration-200 flex items-center gap-1 text-sm font-medium ml-3"
+                  >
+                    <span>❌</span>
+                    Cancelar
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Fila expandible con los detalles (aparece justo debajo) -->
+            <tr *ngIf="reservaSeleccionada()?.id === r.id">
+              <td colspan="6" class="px-4 py-6 bg-gray-50">
+                <div class="p-6 border rounded-lg bg-white">
+                  <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-[#0a3d62] flex items-center gap-2">
+                      <span>📋</span>
+                      Detalles Complejos de la Reserva - {{ reservaSeleccionada()?.codigo }}
+                    </h3>
+                    <button
+                      (click)="reservaSeleccionada.set(null)"
+                      class="w-6 h-6 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center transition-colors duration-200 text-sm"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <!-- Grid de información principal -->
+                  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <!-- Columna 1: Información del Cliente -->
+                    <div class="space-y-4">
+                      <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                          <span>👤</span>
+                          Información del Cliente
+                        </h4>
+                        <div class="space-y-2 text-sm">
+                          <div>
+                            <label class="block text-xs text-gray-500 mb-1">Nombre Completo</label>
+                            <p class="font-medium text-gray-900">
+                              {{ reservaSeleccionada()?.cliente?.nombreCompleto || '—' }}
+                            </p>
+                          </div>
+                          <div>
+                            <label class="block text-xs text-gray-500 mb-1">Email</label>
+                            <p class="font-medium text-gray-900">
+                              {{ reservaSeleccionada()?.cliente?.email || '—' }}
+                            </p>
+                          </div>
+                          <div>
+                            <label class="block text-xs text-gray-500 mb-1">Teléfono</label>
+                            <p class="font-medium text-gray-900">
+                              {{ reservaSeleccionada()?.cliente?.telefono || '—' }}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Columna 2: Información de la Estancia -->
+                    <div class="space-y-4">
+                      <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                          <span>🏨</span>
+                          Información de la Estancia
+                        </h4>
+                        <div class="space-y-2 text-sm">
+                          <div>
+                            <label class="block text-xs text-gray-500 mb-1">Check-in</label>
+                            <p class="font-medium text-gray-900">
+                              {{
+                                reservaSeleccionada()?.entrada
+                                  ? (reservaSeleccionada()?.entrada | date : 'dd/MM/yyyy HH:mm')
+                                  : '—'
+                              }}
+                            </p>
+                          </div>
+                          <div>
+                            <label class="block text-xs text-gray-500 mb-1">Check-out</label>
+                            <p class="font-medium text-gray-900">
+                              {{
+                                reservaSeleccionada()?.salida
+                                  ? (reservaSeleccionada()?.salida | date : 'dd/MM/yyyy HH:mm')
+                                  : '—'
+                              }}
+                            </p>
+                          </div>
+                          <div>
+                            <label class="block text-xs text-gray-500 mb-1">Noches</label>
+                            <p class="font-medium text-gray-900">
+                              {{ calcularNoches(reservaSeleccionada()) }} noche(s)
+                            </p>
+                          </div>
+                          <div>
+                            <label class="block text-xs text-gray-500 mb-1">Huéspedes</label>
+                            <p class="font-medium text-gray-900">
+                              {{ obtenerNumeroHuespedes(reservaSeleccionada()) }} persona(s)
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Columna 3: Información de Habitación y Estado -->
+                    <div class="space-y-4">
+                      <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h4 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                          <span>🚪</span>
+                          Habitación & Estado
+                        </h4>
+                        <div class="space-y-2 text-sm">
+                          <div>
+                            <label class="block text-xs text-gray-500 mb-1"
+                              >Habitación Asignada</label
+                            >
+                            <p class="font-medium text-gray-900">
+                              {{ obtenerHabitacionAsignada(reservaSeleccionada()) }}
+                            </p>
+                          </div>
+                          <div>
+                            <label class="block text-xs text-gray-500 mb-1"
+                              >Tipo de Habitación</label
+                            >
+                            <p class="font-medium text-gray-900">
+                              {{ obtenerTipoHabitacion(reservaSeleccionada()) }}
+                            </p>
+                          </div>
+                          <div>
+                            <label class="block text-xs text-gray-500 mb-1">Estado</label>
+                            <p>
+                              <span
+                                [class]="getEstadoBadgeClass(reservaSeleccionada()?.estado)"
+                                class="px-3 py-1 rounded-full text-xs font-medium"
+                              >
+                                {{ reservaSeleccionada()?.estado }}
+                              </span>
+                            </p>
+                          </div>
+                          <div>
+                            <label class="block text-xs text-gray-500 mb-1">Total Estadía</label>
+                            <p class="font-bold text-green-600 text-sm">
+                              {{
+                                calcularTotalEstadia(reservaSeleccionada())
+                                  | currency : 'COP' : 'symbol' : '1.0-0'
+                              }}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Notas -->
+                  <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
+                    <h4 class="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                      <span>📝</span>
+                      Notas y Observaciones
+                    </h4>
+                    <p class="text-gray-700 text-sm bg-white rounded p-3 min-h-[60px]">
+                      {{
+                        reservaSeleccionada()?.notas ||
+                          'No hay notas adicionales para esta reserva.'
+                      }}
+                    </p>
+                  </div>
+
+                  <!-- Sección de Servicios -->
+                  <div class="mt-6 border-t pt-6">
+                    <h4 class="text-lg font-semibold text-[#0a3d62] mb-4 flex items-center gap-2">
+                      <span>🎯</span>
+                      Servicios Contratados
+                    </h4>
+
+                    <!-- Loading State -->
+                    <div *ngIf="cargandoServicios()" class="text-center py-4">
+                      <div class="flex items-center justify-center gap-2 text-gray-600">
+                        <div
+                          class="animate-spin rounded-full h-4 w-4 border-b-2 border-[#0a3d62]"
+                        ></div>
+                        <span>Cargando servicios...</span>
+                      </div>
+                    </div>
+
+                    <!-- Lista de Servicios -->
+                    <div *ngIf="!cargandoServicios()">
+                      <div
+                        *ngIf="
+                          serviciosReserva() && serviciosReserva().length > 0;
+                          else sinServicios
+                        "
+                        class="space-y-3"
+                      >
+                        <div
+                          *ngFor="let servicio of serviciosReserva(); let i = index"
+                          class="bg-gray-50 border border-gray-200 rounded-lg p-4 shadow-sm"
+                        >
+                          <div class="flex justify-between items-start mb-2">
+                            <div class="flex-1">
+                              <h5 class="font-semibold text-gray-800 text-sm">
+                                {{ obtenerNombreServicio(servicio) }}
+                              </h5>
+                              <div class="text-xs text-gray-600 mt-1 space-y-1">
+                                <p>📅 {{ servicio.fecha }} • ⏰ {{ servicio.horaInicio }}</p>
+                                <p>👥 {{ servicio.numeroPersonas }} persona(s)</p>
+                                <p *ngIf="servicio.observaciones" class="text-blue-600 italic">
+                                  📝 {{ servicio.observaciones }}
+                                </p>
+                              </div>
+                            </div>
+                            <div class="text-right">
+                              <p class="font-bold text-green-600 text-sm">
+                                +{{
+                                  servicio.totalServicio | currency : 'COP' : 'symbol' : '1.0-0'
+                                }}
+                              </p>
+                              <p class="text-xs text-gray-500">
+                                {{
+                                  servicio.precioPorPersona | currency : 'COP' : 'symbol' : '1.0-0'
+                                }}/persona
+                              </p>
+                            </div>
+                          </div>
+
+                          <!-- Botón para cancelar servicio -->
+                          <div class="flex justify-end pt-2 border-t border-gray-100">
+                            <button
+                              (click)="cancelarServicio(servicio.id)"
+                              class="text-red-600 hover:text-red-800 text-xs font-medium flex items-center gap-1 px-3 py-1 border border-red-200 rounded hover:bg-red-50 transition-colors"
+                            >
+                              <span>❌</span>
+                              Cancelar Servicio
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Empty State -->
+                      <ng-template #sinServicios>
+                        <div
+                          class="text-center py-6 border border-dashed border-gray-300 rounded-lg bg-gray-50"
+                        >
+                          <div
+                            class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-2"
+                          >
+                            <span class="text-lg">🎯</span>
+                          </div>
+                          <p class="text-gray-600 text-sm">
+                            No hay servicios contratados para esta reserva.
+                          </p>
+                        </div>
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
         </tbody>
       </table>
     </div>
@@ -165,162 +415,13 @@
     <!-- Empty State -->
     <div
       *ngIf="reservasFiltradas().length === 0"
-      class="text-center py-8 border border-gray-200 rounded-lg bg-gray-50"
+      class="text-center py-8 border border-gray-200 rounded-lg bg-gray-50 mt-6"
     >
       <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
         <span class="text-2xl">📭</span>
       </div>
       <h3 class="text-lg font-semibold text-gray-900 mb-1">No hay reservas</h3>
       <p class="text-gray-500 text-sm">No se encontraron reservas con los filtros actuales.</p>
-    </div>
-  </div>
-
-  <!-- Panel de Detalles -->
-  <div *ngIf="reservaSeleccionada()" class="mt-6 p-6 border rounded-lg bg-gray-50">
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-semibold text-[#0a3d62] flex items-center gap-2">
-        <span>📋</span>
-        Detalles de la Reserva
-      </h3>
-      <button
-        (click)="reservaSeleccionada.set(null)"
-        class="w-6 h-6 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center transition-colors duration-200 text-sm"
-      >
-        ✕
-      </button>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Código de Reserva</label>
-          <p class="font-semibold text-[#0a3d62]">{{ reservaSeleccionada()?.codigo }}</p>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-          <p>
-            <span
-              [class]="getEstadoBadgeClass(reservaSeleccionada()?.estado)"
-              class="px-2 py-1 rounded-full text-xs font-medium"
-            >
-              {{ reservaSeleccionada()?.estado }}
-            </span>
-          </p>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Cliente</label>
-          <p class="font-medium text-gray-900">
-            {{ reservaSeleccionada()?.cliente?.nombreCompleto }}
-          </p>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
-          <p class="font-medium text-gray-900">{{ reservaSeleccionada()?.cliente?.email }}</p>
-        </div>
-      </div>
-
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Entrada</label>
-          <p class="font-medium text-gray-900">
-            {{
-              reservaSeleccionada()?.entrada
-                ? (reservaSeleccionada()?.entrada | date : 'yyyy-MM-dd HH:mm')
-                : '—'
-            }}
-          </p>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Salida</label>
-          <p class="font-medium text-gray-900">
-            {{
-              reservaSeleccionada()?.salida
-                ? (reservaSeleccionada()?.salida | date : 'yyyy-MM-dd HH:mm')
-                : '—'
-            }}
-          </p>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Notas</label>
-          <p class="text-gray-700 bg-white rounded p-3 border border-gray-300 min-h-[60px]">
-            {{ reservaSeleccionada()?.notas || 'No hay notas adicionales.' }}
-          </p>
-        </div>
-      </div>
-    </div>
-    <!-- Sección de Servicios -->
-    <div class="mt-6 border-t pt-6">
-      <h4 class="text-lg font-semibold text-[#0a3d62] mb-4 flex items-center gap-2">
-        <span>🎯</span>
-        Servicios Contratados
-      </h4>
-
-      <!-- Loading State -->
-      <div *ngIf="cargandoServicios()" class="text-center py-4">
-        <div class="flex items-center justify-center gap-2 text-gray-600">
-          <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-[#0a3d62]"></div>
-          <span>Cargando servicios...</span>
-        </div>
-      </div>
-
-      <!-- Lista de Servicios -->
-      <div *ngIf="!cargandoServicios()">
-        <div
-          *ngIf="serviciosReserva() && serviciosReserva().length > 0; else sinServicios"
-          class="space-y-3"
-        >
-          <div
-            *ngFor="let servicio of serviciosReserva(); let i = index"
-            class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
-          >
-            <div class="flex justify-between items-start mb-2">
-              <div class="flex-1">
-                <h5 class="font-semibold text-gray-800 text-sm">
-                  {{ obtenerNombreServicio(servicio) }}
-                </h5>
-                <div class="text-xs text-gray-600 mt-1 space-y-1">
-                  <p>📅 {{ servicio.fecha }} • ⏰ {{ servicio.horaInicio }}</p>
-                  <p>👥 {{ servicio.numeroPersonas }} persona(s)</p>
-                  <p *ngIf="servicio.observaciones" class="text-blue-600 italic">
-                    📝 {{ servicio.observaciones }}
-                  </p>
-                </div>
-              </div>
-              <div class="text-right">
-                <p class="font-bold text-green-600 text-sm">
-                  +{{ servicio.totalServicio | currency : 'COP' : 'symbol' : '1.0-0' }}
-                </p>
-                <p class="text-xs text-gray-500">
-                  {{ servicio.precioPorPersona | currency : 'COP' : 'symbol' : '1.0-0' }}/persona
-                </p>
-              </div>
-            </div>
-
-            <!-- Botón para cancelar servicio -->
-            <div class="flex justify-end pt-2 border-t border-gray-100">
-              <button
-                (click)="cancelarServicio(servicio.id)"
-                class="text-red-600 hover:text-red-800 text-xs font-medium flex items-center gap-1 px-3 py-1 border border-red-200 rounded hover:bg-red-50 transition-colors"
-              >
-                <span>❌</span>
-                Cancelar Servicio
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Empty State -->
-        <ng-template #sinServicios>
-          <div class="text-center py-6 border border-dashed border-gray-300 rounded-lg bg-gray-50">
-            <div
-              class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-2"
-            >
-              <span class="text-lg">🎯</span>
-            </div>
-            <p class="text-gray-600 text-sm">No hay servicios contratados para esta reserva.</p>
-          </div>
-        </ng-template>
-      </div>
     </div>
   </div>
 
