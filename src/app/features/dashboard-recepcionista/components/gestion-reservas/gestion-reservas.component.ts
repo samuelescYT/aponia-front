@@ -2,6 +2,7 @@ import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { ReservasApiService } from '../../../../core/services/reservas/reserva-api.service';
 import { Reserva, EstadoReserva } from '../../../../shared/models/reserva.model';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 
 type ReservaConEstancia = Reserva & {
   entrada?: string | null;
@@ -33,7 +34,7 @@ export class GestionReservasComponent implements OnInit {
       : todas;
   });
 
-  constructor(private reservasApi: ReservasApiService) {}
+  constructor(private reservasApi: ReservasApiService, private http: HttpClient) {}
 
   ngOnInit(): void {
     this.cargarReservas();
@@ -123,6 +124,7 @@ export class GestionReservasComponent implements OnInit {
     console.log('📋 Detalles de reserva:', reserva);
     console.log('🏨 Fechas de estancia - Entrada:', reserva.entrada, 'Salida:', reserva.salida);
     this.reservaSeleccionada.set(reserva);
+    this.cargarServiciosReserva(reserva.id); // ← Cargar servicios inmediatamente
   }
 
   cancelarReserva(id: string): void {
@@ -193,4 +195,131 @@ export class GestionReservasComponent implements OnInit {
       return fecha;
     }
   }
+
+  // Señales
+serviciosReserva = signal<any[]>([]);
+cargandoServicios = signal(false);
+
+// Método para cargar servicios de la reserva
+async cargarServiciosReserva(reservaId: string) {
+  this.cargandoServicios.set(true);
+  this.serviciosReserva.set([]);
+
+  try {
+    // Primero obtener los servicios básicos
+    const serviciosBasicos = await this.reservasApi.getServiciosPorReserva(reservaId).toPromise();
+    
+    if (serviciosBasicos && serviciosBasicos.length > 0) {
+      // Cargar información completa de cada servicio
+      const serviciosCompletos = await this.cargarInformacionServicios(serviciosBasicos);
+      console.log('🔍 Servicios completos cargados:', serviciosCompletos);
+      this.serviciosReserva.set(serviciosCompletos);
+    } else {
+      this.serviciosReserva.set([]);
+    }
+  } catch (error) {
+    console.error('❌ Error cargando servicios:', error);
+  } finally {
+    this.cargandoServicios.set(false);
+  }
+}
+
+private async cargarInformacionServicios(serviciosReserva: any[]): Promise<any[]> {
+  const serviciosCompletos = [];
+  
+  for (const servicioReserva of serviciosReserva) {
+    try {
+      // Obtener el servicioId
+      const servicioId = await this.obtenerServicioId(servicioReserva.id);
+      console.log(`🔍 ServicioId para ${servicioReserva.id}:`, servicioId);
+      
+      // Cargar información completa del servicio
+      const servicioCompleto = await this.http.get<any>(
+        `http://localhost:8083/api/servicios/${servicioId}`
+      ).toPromise();
+      
+      serviciosCompletos.push({
+        ...servicioReserva,
+        servicio: servicioCompleto,
+        servicioId: servicioId // Por si acaso
+      });
+    } catch (error) {
+      console.error('Error cargando servicio completo:', error);
+      serviciosCompletos.push(servicioReserva);
+    }
+  }
+  
+  return serviciosCompletos;
+}
+
+// Método para cancelar servicio
+cancelarServicio(servicioId: string) {
+  if (!confirm('¿Está seguro de que desea cancelar este servicio?')) {
+    return;
+  }
+
+  this.reservasApi.eliminarServicioReserva(servicioId).subscribe({
+    next: () => {
+      alert('Servicio cancelado exitosamente');
+      // Recargar servicios usando la reserva seleccionada actual
+      const reservaActual = this.reservaSeleccionada();
+      if (reservaActual) {
+        this.cargarServiciosReserva(reservaActual.id);
+      }
+    },
+    error: (error) => {
+      console.error('❌ Error cancelando servicio:', error);
+      alert('Error al cancelar el servicio');
+    }
+  });
+}
+
+private async obtenerServicioId(reservaServicioId: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    this.http.get<string>(
+      `http://localhost:8083/api/reservas-servicios/${reservaServicioId}/servicio-id`,
+      { responseType: 'text' as 'json' }
+    ).subscribe({
+      next: (servicioId: string) => {
+        resolve(servicioId);
+      },
+      error: (error: any) => {
+        console.error('Error obteniendo servicioId:', error);
+        resolve('servicio_default');
+      }
+    });
+  });
+}
+
+// En reservas-list.component.ts
+getNumeroHabitacion(estancia: any): string {
+  if (estancia?.habitacionAsignada?.numero) {
+    return `#${estancia.habitacionAsignada.numero}`;
+  }
+  return 'Por asignar';
+}
+
+obtenerNombreServicio(servicioReserva: any): string {
+  console.log('🔍 Datos del servicio para obtener nombre:', servicioReserva);
+  
+  // Si ya viene con el servicio completo
+  if (servicioReserva.servicio?.nombre) {
+    return servicioReserva.servicio.nombre;
+  }
+  const nombresServicios: {[key: string]: string} = {
+    'servicio_trekking': 'Trekking al amanecer',
+    'servicio_restaurante': 'Restaurante Gourmet',
+    'servicio_transporte': 'Transporte Privado', 
+    'servicio_wifi': 'Wi-Fi & Cowork',
+    'servicio_spa': 'Spa de autor'
+  };
+  
+  // Buscar por servicioId si está disponible
+  const servicioId = servicioReserva.servicio?.id || servicioReserva.servicioId;
+  if (servicioId && nombresServicios[servicioId]) {
+    return nombresServicios[servicioId];
+  }
+  
+  return 'Servicio Adicional';
+}
 }

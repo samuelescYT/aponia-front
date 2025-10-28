@@ -57,4 +57,8 @@ actualizarReserva(clienteId: string, reservaId: string, data: ReservaHabitacionR
 getServiciosPorReserva(reservaId: string): Observable<any[]> {
   return this.http.get<any[]>(`http://localhost:8083/api/reservas-servicios/reserva/${reservaId}`);
 }
+
+eliminarServicioReserva(servicioReservaId: string): Observable<void> {
+  return this.http.delete<void>(`http://localhost:8083/api/reservas-servicios/delete/${servicioReservaId}`);
+}
 }
